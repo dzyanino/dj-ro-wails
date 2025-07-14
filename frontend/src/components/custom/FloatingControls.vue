@@ -7,7 +7,7 @@ import { RandomGraphJS } from '../../../wailsjs/go/services/Randomizer'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { CirclePlusIcon, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon } from 'lucide-vue-next'
+import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon } from 'lucide-vue-next'
 
 import NodeTable from './NodeTable.vue'
 
@@ -19,16 +19,19 @@ const panelWidth = shallowRef<number>(384)
 const isExpanded = shallowRef<boolean>(false)
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
+const isCreatingRandomGraph = shallowRef<boolean>(false);
 
 const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
 
 async function createRandomGraph() {
-  const generatedGraph = await RandomGraphJS("node", 10, 14, 500, 300);
+  isCreatingRandomGraph.value = true;
+
+  const generatedGraph = await RandomGraphJS("node", 10, 14, 50, 50);
   setNodes(generatedGraph.nodes);
   setEdges(generatedGraph.edges);
   layouts.value = generatedGraph.layouts;
-  // console.log(getNodes)
-  // console.log(getEdges)
+
+  isCreatingRandomGraph.value = false;
 }
 
 onMounted(async () => {
@@ -57,7 +60,10 @@ onMounted(async () => {
             <CirclePlusIcon v-else />
           </Button>
           <Button variant="secondary"><SplineIcon /></Button>
-          <Button @click="createRandomGraph()" variant="secondary" class="mt-4"><ShuffleIcon /></Button>
+          <Button @click="createRandomGraph()" :disabled="isCreatingRandomGraph" variant="secondary" class="mt-4">
+            <Loader2 v-if="isCreatingRandomGraph" class="w-4 h-4 animate-spin" />
+            <ShuffleIcon v-else />
+          </Button>
       </div>
 
     </div>
