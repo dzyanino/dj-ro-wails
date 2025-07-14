@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { onBeforeMount, onBeforeUnmount, provide, shallowRef } from 'vue';
+import { onBeforeMount, onBeforeUnmount, provide, ref, shallowRef } from 'vue';
+import type { Layouts } from 'v-network-graph';
 import FloatingNavBar from '@/components/layouts/FloatingNavBar.vue';
 import FloatingControls from '@/components/custom/FloatingControls.vue';
 import NetworkGraph from '@/components/custom/NetworkGraph.vue';
@@ -8,8 +9,10 @@ import isMobile from '@/utils/isMobile';
 const mobile = shallowRef<boolean>(isMobile());
 
 const isAddingNode = shallowRef<boolean>(false);
+const layouts = ref<Layouts>({ nodes: {} });
 
 provide('isAddingNode', isAddingNode);
+provide('layouts', layouts);
 
 
 function onResize() {
