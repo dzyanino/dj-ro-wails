@@ -3,6 +3,7 @@ import { onMounted, shallowRef, nextTick } from 'vue'
 import { CirclePlusIcon, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import Tooltip from './Tooltip.vue'
 
 const sidePanel = shallowRef<HTMLElement | null>(null)
 const panelWidth = shallowRef<number>(384)
@@ -30,9 +31,18 @@ onMounted(async () => {
       </Button>
 
       <div class="flex flex-col gap-2">
-          <Button variant="secondary"><CirclePlusIcon /></Button>
-          <Button variant="secondary"><SplineIcon /></Button>
-          <Button variant="secondary" class="mt-4"><ShuffleIcon /></Button>
+        <Tooltip>
+          <template #trigger><Button variant="secondary"><CirclePlusIcon /></Button></template>
+          <template #content>Ajouter sommet</template>
+        </Tooltip>
+        <Tooltip>
+          <template #trigger><Button variant="secondary"><SplineIcon /></Button></template>
+          <template #content>Ajouter arc</template>
+        </Tooltip>
+        <Tooltip>
+          <template #trigger><Button variant="secondary" class="mt-4"><ShuffleIcon /></Button></template>
+          <template #content>Aléatoire</template>
+        </Tooltip>
       </div>
 
     </div>
