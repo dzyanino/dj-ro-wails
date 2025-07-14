@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { inject, isReactive, ref, shallowRef, type Ref, type ShallowRef } from 'vue';
+import { inject, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
 import { useNodeStore } from '@/stores/nodes';
 import { useEdgeStore } from '@/stores/edges';
 import configs from '@/utils/vNetworkGraphConfigs';
@@ -15,7 +15,7 @@ const nodes = ref(getNodes);
 const edges = ref(getEdges);
 const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
 
-let nextNodeIndex = Object.keys(nodes.value).length + 1;
+const nextNodeIndex = shallowRef<number>(Object.keys(nodes.value).length + 1);
 
 const eventHandlers: EventHandlers = {
     "view:click": ({ event }) => {
@@ -24,18 +24,20 @@ const eventHandlers: EventHandlers = {
         const point = { x: event.offsetX, y: event.offsetY };
         const svgPoint = graph.value.translateFromDomToSvgCoordinates(point);
 
-        const nodeId = `node${nextNodeIndex}`;
-        const name = `Node ${nextNodeIndex}`;
+        const nodeId = `node${nextNodeIndex.value}`;
+        const name = `Node ${nextNodeIndex.value}`;
 
         if (!!layouts.value.nodes) { layouts.value.nodes[nodeId] = svgPoint };
 
         nodes.value[nodeId] = { id: nodeId, name };
-        nextNodeIndex++
-        
-        console.log(isReactive(nodes.value));
+        nextNodeIndex.value++
     }
 }
-const zoomLevel = shallowRef<number>(2);
+const zoomLevel = shallowRef<number>(3);
+
+watch(() => Object.keys(nodes.value).length, (newLength) => {
+    nextNodeIndex.value = newLength + 1;
+}, { immediate: true });
 </script>
 
 <template>
