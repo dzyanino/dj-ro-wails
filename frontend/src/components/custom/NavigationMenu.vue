@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button } from '../ui/button';
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '../ui/navigation-menu'
-import { Separator } from '../ui/separator';
+import { Button } from '@/components/ui/button';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
+import { Separator } from '@/components/ui/separator';
 import ThemeSwitcher from './ThemeSwitcher.vue';
 
 const navLinks = [
