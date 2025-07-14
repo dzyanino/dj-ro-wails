@@ -1,0 +1,19 @@
+<svg viewBox="0 0 200 200" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg"
+  preserveAspectRatio="xMidYMid meet">
+  <style>
+    .node {
+    fill: #ff6699;
+    stroke: #d65c85;
+    stroke-width: 2;
+    }
+    .background {
+    fill: #f9f5ff;
+    }
+  </style>
+  <circle cx="100" cy="100" r="90" class="background" />
+  <line x1="50" y1="80" x2="150" y2="80" stroke="#ffb3cc" stroke-width="2" />
+  <line x1="150" y1="80" x2="110" y2="140" stroke="#ffb3cc" stroke-width="2" />
+  <circle cx="50" cy="80" r="18" class="node" />
+  <circle cx="150" cy="80" r="24" class="node" />
+  <circle cx="110" cy="140" r="16" class="node" />
+</svg>

@@ -1,7 +1,5 @@
-<script setup lang="ts">
-import { Button } from '@/components/ui/button';
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <Button>Click me</Button>
+  <router-view />
 </template>

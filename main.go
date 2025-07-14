@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dj-ro/internal/services"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -14,6 +15,7 @@ var assets embed.FS
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
+	randomizer := services.NewRandomizer()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -27,6 +29,7 @@ func main() {
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
+			randomizer,
 		},
 	})
 
