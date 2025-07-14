@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { onBeforeMount, onBeforeUnmount, provide, shallowRef } from 'vue';
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+// import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import FloatingNavBar from '@/components/layouts/FloatingNavBar.vue';
 import NetworkGraph from '@/components/custom/NetworkGraph.vue';
-import RightControls from '@/components/custom/RightControls.vue';
+// import RightControls from '@/components/custom/RightControls.vue';
 import isMobile from '@/utils/isMobile';
+import FloatingControls from '@/components/custom/FloatingControls.vue';
 
 const mobile = shallowRef<boolean>(isMobile());
 
@@ -28,24 +29,11 @@ onBeforeUnmount(() => {
 
 <template>
     <FloatingNavBar />
+    <FloatingControls />
 
-    <main class="flex flex-col w-full h-screen p-2">
-
+    <main class="flex flex-col w-full h-dvh p-2">
         <div class="flex flex-1 flex-col gap-4">
-            <ResizablePanelGroup :direction="mobile ? 'vertical' : 'horizontal'">
-
-                <ResizablePanel :default-size="50">
-                    <NetworkGraph class="h-full" />
-                </ResizablePanel>
-
-                <ResizableHandle with-handle />
-
-                <ResizablePanel :default-size="50">
-                    <RightControls />
-                </ResizablePanel>
-
-            </ResizablePanelGroup>
+            <NetworkGraph class="h-full" />
         </div>
-
     </main>
 </template>
