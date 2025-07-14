@@ -13,7 +13,9 @@ export const useEdgeStore = defineStore("edges", () => {
             console.log("Empty edges");
         }
         // Directly assign the record
-        edges.value = edgesJson as Record<string, EdgeWithId>;
+        // edges.value = edgesJson as Record<string, EdgeWithId>;
+        Object.keys(edges.value).forEach(key => delete edges.value[key]);
+        Object.assign(edges.value, edgesJson);
     }
 
     function addEdge(edge: EdgeWithId) {

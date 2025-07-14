@@ -12,7 +12,9 @@ export const useNodeStore = defineStore("nodes", () => {
             console.log("Empty nodes")
         }
         // Directly assign the record
-        nodes.value = nodesJson as Record<string, NodeWithId>;
+        // nodes.value = nodesJson as Record<string, NodeWithId>;
+        Object.keys(nodes.value).forEach(key => delete nodes.value[key]);
+        Object.assign(nodes.value, nodesJson);
     }
 
     function addNode(node: NodeWithId) {
