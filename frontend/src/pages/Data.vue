@@ -26,6 +26,8 @@ const graphConfigs = computed(() => createGraphConfig(theme.value, isAddingEdge.
 const selectedNodes = ref<string[]>([]);
 const selectedEdges = ref<string[]>([]);
 
+const isAddingEdgeDialogOpen = shallowRef<boolean>(false);
+
 provide('configs', graphConfigs);
 
 provide('isAddingNode', isAddingNode);
@@ -34,6 +36,8 @@ provide('layouts', layouts);
 
 provide('selectedNodes', selectedNodes);
 provide('selectedEdges', selectedEdges);
+
+provide('isAddingEdgeDialogOpen', isAddingEdgeDialogOpen);
 
 
 function onResize() {
@@ -51,11 +55,14 @@ onBeforeUnmount(() => {
 
 <template>
     <FloatingNavBar />
-    <FloatingControls />
-
-    <main class="flex w-full h-dvh p-2">
-        <div class="flex flex-1 flex-col gap-4">
-            <NetworkGraph class="h-full" />
+    <main>
+        <FloatingControls />
+        
+        <div class="flex w-full h-dvh p-2">
+            <div class="flex flex-1 flex-col gap-4">
+                <NetworkGraph />
+            </div>
         </div>
     </main>
+
 </template>
