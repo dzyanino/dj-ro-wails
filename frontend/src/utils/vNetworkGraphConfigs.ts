@@ -1,66 +1,71 @@
 import { defineConfigs } from 'v-network-graph';
 import { ForceLayout, type ForceNodeDatum, type ForceEdgeDatum } from 'v-network-graph/lib/force-layout';
 
-const configs = defineConfigs({
-    view: {
-        grid: {
-            visible: true,
-            interval: 10,
-            thickIncrements: 5,
-            line: {
-                color: "#e0e0e0",
+export function createGraphConfig(
+    theme: 'light' | 'dark',
+    nodeSelectable: boolean | number = false
+) {
+    const isDark = theme == 'dark';
+
+    return defineConfigs({
+        view: {
+            grid: {
+                visible: true,
+                interval: 10,
+                thickIncrements: 5,
+                line: {
+                color: isDark ? "#444" : "#e0e0e0",
                 width: 1,
                 dasharray: 1,
-            },
-            thick: {
-                color: "#cccccc",
+                },
+                thick: {
+                color: isDark ? "#666" : "#ccc",
                 width: 1,
                 dasharray: 0,
+                },
             },
-        },
-        layoutHandler: new ForceLayout({
-            positionFixedByDrag: false,
-            positionFixedByClickWithAltKey: true,
-            createSimulation: (d3, nodes, edges) => {
-                // d3-force parameters
+            layoutHandler: new ForceLayout({
+                positionFixedByDrag: false,
+                positionFixedByClickWithAltKey: true,
+                createSimulation: (d3, nodes, edges) => {
                 const forceLink = d3.forceLink<ForceNodeDatum, ForceEdgeDatum>(edges).id((d: { id: any; }) => d.id)
-                return d3
-                    .forceSimulation(nodes)
+                return d3.forceSimulation(nodes)
                     .force("edge", forceLink.distance(50).strength(0.5))
                     .force("charge", d3.forceManyBody().strength(-25))
                     .alphaMin(0.001)
-            }
-        }),
-        minZoomLevel: 0.1,
-        maxZoomLevel: 16,
-    },
-    node: {
-        normal: {
-            color: "#ff6699",
+                }
+            }),
+            minZoomLevel: 0.5,
+            maxZoomLevel: 10,
         },
-        hover: {
-            color: "#ff99cc"
+        node: {
+            selectable: nodeSelectable ? 2 : false,
+            normal: {
+                color: isDark ? "#ff6699" : "#d13b6f",
+            },
+            hover: {
+                color: isDark ? "#ff99cc" : "#f273a3"
+            },
+            label: {
+                visible: true,
+                direction: "south",
+                directionAutoAdjustment: true,
+                color: isDark ? "white" : "black"
+            },
         },
-        label: {
-            visible: true,
-            direction: "south",
-            directionAutoAdjustment: true,
-            color: "blue"
+        edge: {
+            selectable: false,
+            gap: 50,
+            normal: {
+                color: isDark ? "#ffb3cc" : "#f18ca3",
+            },
+            hover: {
+                color: isDark ? "#ff99bb" : "#ff6f96",
+            },
+            label: {
+                color: isDark ? "white" : "black"
+            },
+            type: "curve",
         },
-    },
-    edge: {
-        gap: 50,
-        normal: {
-            color: "#ffb3cc",
-        },
-        hover: {
-            color: "#ff99bb",
-        },
-        label: {
-            color: "blue"
-        },
-        type: "curve",
-    },
-});
-
-export default configs
+    });
+}

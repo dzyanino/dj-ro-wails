@@ -4,11 +4,9 @@ import { useNodeStore } from '@/stores/nodes'
 import { useEdgeStore } from '@/stores/edges'
 import type { Layouts } from 'v-network-graph'
 import { RandomGraphJS } from '../../../wailsjs/go/services/Randomizer'
-
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon } from 'lucide-vue-next'
-
 import NodeTable from './NodeTable.vue'
 
 const { getNodes, setNodes } = useNodeStore();
@@ -19,7 +17,10 @@ const panelWidth = shallowRef<number>(384)
 const isExpanded = shallowRef<boolean>(false)
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
+const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isCreatingRandomGraph = shallowRef<boolean>(false);
+
+// const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
 
 const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
 
@@ -55,11 +56,14 @@ onMounted(async () => {
       </Button>
 
       <div class="flex flex-col gap-2">
-          <Button :variant="isAddingNode ? 'default' : 'secondary'" @click="isAddingNode = !isAddingNode">
+          <Button @click="isAddingNode = !isAddingNode; isAddingEdge = false" :variant="isAddingNode ? 'default' : 'secondary'">
             <StopCircleIcon v-if="isAddingNode" />
             <CirclePlusIcon v-else />
           </Button>
-          <Button variant="secondary"><SplineIcon /></Button>
+          <Button @click="isAddingEdge = !isAddingEdge; isAddingNode = false" :variant="isAddingEdge ? 'default' : 'secondary'">
+            <StopCircleIcon v-if="isAddingEdge" />
+            <SplineIcon v-else />
+          </Button>
           <Button @click="createRandomGraph()" :disabled="isCreatingRandomGraph" variant="secondary" class="mt-4">
             <Loader2 v-if="isCreatingRandomGraph" class="w-4 h-4 animate-spin" />
             <ShuffleIcon v-else />
@@ -76,7 +80,7 @@ onMounted(async () => {
           <CardDescription>Arcs et sommets</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="max-h-64 overflow-auto">
+          <div class="max-h-64 relative overflow-auto">
             <NodeTable v-if="Object.keys(getNodes).length != 0" :nodes="getNodes" :edges="getEdges" />
             <div v-else class="flex items-center justify-center h-12 border">
               <code>vide...</code>

@@ -1,19 +1,23 @@
 <script lang="ts" setup>
-import { inject, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
+import { inject, ref, shallowRef, watch, type ComputedRef, type Ref, type ShallowRef } from 'vue';
 import { useNodeStore } from '@/stores/nodes';
 import { useEdgeStore } from '@/stores/edges';
-import configs from '@/utils/vNetworkGraphConfigs';
-import { VNetworkGraph, VEdgeLabel, type EventHandlers , type Instance, type Layouts } from 'v-network-graph'
+import { VNetworkGraph, VEdgeLabel, type EventHandlers , type Instance, type Layouts, type UserConfigs } from 'v-network-graph';
 
 const { getNodes } = useNodeStore();
 const { getEdges } = useEdgeStore();
 
+const configs = inject<ComputedRef<UserConfigs>>('configs');
+
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
+const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
+
+const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
 
 const graph = ref<Instance>();
 const nodes = ref(getNodes);
 const edges = ref(getEdges);
-const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
+const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })));
 
 const nextNodeIndex = shallowRef<number>(Object.keys(nodes.value).length + 1);
 
@@ -38,11 +42,18 @@ const zoomLevel = shallowRef<number>(3);
 watch(() => Object.keys(nodes.value).length, (newLength) => {
     nextNodeIndex.value = newLength + 1;
 }, { immediate: true });
+
+watch(isAddingEdge, (isIt: boolean) => {
+  selectedNodes.value = [];
+
+  if (configs?.value && configs.value.node) configs.value.node.selectable = isIt ? 2 : false;
+});
 </script>
 
 <template>
     <v-network-graph
         ref="graph"
+        v-model:selected-nodes="selectedNodes"
         :nodes="nodes"
         :edges="edges"
         :layouts="layouts"
