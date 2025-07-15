@@ -49,9 +49,11 @@ export function createGraphConfig(
       selectable: nodeSelectable ? 2 : false,
       normal: {
         color: isDark ? "#ff6699" : "#d13b6f",
+        radius: 18,
       },
       hover: {
         color: isDark ? "#ff99cc" : "#f273a3",
+        radius: 20,
       },
       label: {
         visible: true,
@@ -59,20 +61,37 @@ export function createGraphConfig(
         directionAutoAdjustment: true,
         color: isDark ? "white" : "black",
       },
+      zOrder: {
+        enabled: true,
+        zIndex: (n) => n.zIndex,
+        bringToFrontOnHover: true,
+        bringToFrontOnSelected: true,
+      },
     },
     edge: {
-      selectable: false,
+      selectable: true,
       gap: 50,
       normal: {
         color: isDark ? "#ffb3cc" : "#f18ca3",
+        width: 4,
       },
       hover: {
         color: isDark ? "#ff99bb" : "#ff6f96",
+        width: 8,
+      },
+      selected: {
+        width: 6,
       },
       label: {
         color: isDark ? "white" : "black",
       },
       type: "curve",
+      zOrder: {
+        enabled: true,
+        zIndex: (n) => n.zIndex,
+        bringToFrontOnHover: true,
+        bringToFrontOnSelected: true,
+      },
     },
   });
 }
