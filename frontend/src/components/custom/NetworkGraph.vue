@@ -52,9 +52,6 @@ function cancelEdgeAddition() {
 }
 
 function addEdge() {
-  console.log(edgeWeight.value);
-  console.log(selectedNodes.value);
-
   const edgeId = `edge${nextEdgeIndex.value}`;
   edges.value[edgeId] = {
     id: edgeId,
@@ -71,6 +68,10 @@ function addEdge() {
 
 watch(() => Object.keys(nodes.value).length, (newLength) => {
   nextNodeIndex.value = newLength + 1;
+}, { immediate: true });
+
+watch(() => Object.keys(edges.value).length, (newLength) => {
+  nextEdgeIndex.value = newLength + 1;
 }, { immediate: true });
 
 watch(isAddingEdge, (isIt: boolean) => {
