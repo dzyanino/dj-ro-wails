@@ -42,7 +42,8 @@ const scheduleHide = () => {
     </div>
     <div class="fixed top-0 left-1/2 -translate-x-1/2 z-50 mt-2">
       <Transition name="slide">
-        <Card v-show="isVisible" @mouseenter="showNav(true)" @mouseleave="scheduleHide()" class="py-2">
+        <Card v-show="isVisible" @mouseenter="showNav(true)" @mouseleave="scheduleHide()"
+          class="py-2 bg-card dark:bg-card">
           <CardContent class="px-2">
             <slot>
               <NavigationMenu />

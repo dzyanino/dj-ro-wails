@@ -29,7 +29,7 @@ onClickOutside(themeSwitcher, () => {
         <span class="sr-only">Changer thème</span>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" class="bg-card mt-1">
+    <DropdownMenuContent align="end" class=" mt-1 bg-card dark:bg-card">
       <DropdownMenuItem @click="mode = 'light'">
         Clair
       </DropdownMenuItem>
