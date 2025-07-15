@@ -9,17 +9,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 
 defineProps<{
-  open: boolean
-  onConfirm?: () => void
-  onCancel?: () => void
-}>()
+  open: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:open', value: boolean): void
-}>()
+  (e: "update:open", value: boolean): void;
+}>();
 </script>
 
 <template>
@@ -45,13 +45,23 @@ const emit = defineEmits<{
       <AlertDialogFooter>
         <slot name="dialog-footer">
           <AlertDialogCancel
-            @click="() => { emit('update:open', false); onCancel?.() }"
+            @click="
+              () => {
+                emit('update:open', false);
+                onCancel?.();
+              }
+            "
           >
             Annuler
           </AlertDialogCancel>
 
           <AlertDialogAction
-            @click="() => { emit('update:open', false); onConfirm?.() }"
+            @click="
+              () => {
+                emit('update:open', false);
+                onConfirm?.();
+              }
+            "
           >
             Confirmer
           </AlertDialogAction>

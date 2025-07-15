@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { Label } from '@/components/ui/label'
+import { Label } from "@/components/ui/label";
 import {
   NumberField,
   NumberFieldContent,
   NumberFieldDecrement,
   NumberFieldIncrement,
   NumberFieldInput,
-} from '@/components/ui/number-field'
+} from "@/components/ui/number-field";
 
 defineProps<{
-  id?: string
-  label?: string
-  modelValue: number
-  min?: number
-  max?: number
-  step?: number
-}>()
+  id?: string;
+  label?: string;
+  modelValue: number;
+  min?: number;
+  max?: number;
+  step?: number;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: number): void
-}>()
+  (e: "update:modelValue", value: number): void;
+}>();
 </script>
 
 <template>

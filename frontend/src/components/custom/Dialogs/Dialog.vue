@@ -7,18 +7,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 defineProps<{
-  open: boolean
-  onConfirm?: () => void
-  onCancel?: () => void
-}>()
+  open: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:open', value: boolean): void
-}>()
+  (e: "update:open", value: boolean): void;
+}>();
 </script>
 
 <template>
@@ -44,13 +44,23 @@ const emit = defineEmits<{
       <DialogFooter>
         <slot name="dialog-footer">
           <Button
-            @click="() => { emit('update:open', false); onCancel?.() }"
+            @click="
+              () => {
+                emit('update:open', false);
+                onCancel?.();
+              }
+            "
             variant="secondary"
           >
             Annuler
           </Button>
           <Button
-            @click="() => { emit('update:open', false); onConfirm?.() }"
+            @click="
+              () => {
+                emit('update:open', false);
+                onConfirm?.();
+              }
+            "
           >
             Confirmer
           </Button>
