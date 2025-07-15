@@ -6,8 +6,9 @@ import type { Layouts } from 'v-network-graph'
 import { RandomGraphJS } from '../../../wailsjs/go/services/Randomizer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, Trash2Icon } from 'lucide-vue-next'
+import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, BrushCleaningIcon } from 'lucide-vue-next'
 import NodeTable from './NodeTable.vue'
+import ModalDialog from './Dialogs/ModalDialog.vue'
 
 const { getNodes, setNodes, clearNodes } = useNodeStore();
 const { getEdges, setEdges, clearEdges } = useEdgeStore();
@@ -24,7 +25,9 @@ const isClearingGraph = shallowRef<boolean>(false);
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
 const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
 
-const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
+const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })));
+
+const isClearingGraphDialogOpen = shallowRef<boolean>(false);
 
 function toggleAddingMode(mode: 'node' | 'edge') {
   const togglingNode = mode === 'node';
@@ -89,9 +92,10 @@ onMounted(async () => {
           <Loader2 v-if="isCreatingRandomGraph" class="w-4 h-4 animate-spin" />
           <ShuffleIcon v-else />
         </Button>
-        <Button @click="clearGraph()" variant="secondary" class="mt-12">
+        <Button @click="isClearingGraphDialogOpen = true" :disabled="Object.keys(getNodes).length == 0"
+          variant="secondary" class="mt-12">
           <Loader2 v-if="isClearingGraph" class="w-4 h-4 animate-spin" />
-          <Trash2Icon v-else />
+          <BrushCleaningIcon v-else />
         </Button>
       </div>
 
@@ -99,13 +103,13 @@ onMounted(async () => {
 
 
     <div ref="sidePanel" class="w-xs md:w-sm h-full">
-      <Card class="h-full bg-background dark:bg-background rounded-md">
+      <Card class="h-full bg-card dark:bg-card rounded-md">
         <CardHeader>
           <CardTitle>Tableau représentatif du graphe</CardTitle>
           <CardDescription>Arcs et sommets</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="max-h-64 relative overflow-auto">
+          <div class="max-h-96 relative overflow-auto">
             <NodeTable v-if="Object.keys(getNodes).length != 0" :nodes="getNodes" :edges="getEdges" />
             <div v-else class="flex items-center justify-center h-12 border">
               <code>vide...</code>
@@ -113,10 +117,16 @@ onMounted(async () => {
           </div>
         </CardContent>
         <CardFooter>
-          <p>card footer</p>
+          <p>_</p>
         </CardFooter>
       </Card>
     </div>
 
   </div>
+
+  <ModalDialog v-model:open="isClearingGraphDialogOpen" :onConfirm="clearGraph">
+    <template #dialog-title>Attention</template>
+    <template #dialog-description>Vous allez supprimer tous les éléments du graphe</template>
+  </ModalDialog>
+
 </template>
