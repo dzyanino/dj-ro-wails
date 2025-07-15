@@ -37,8 +37,8 @@ export function createGraphConfig(
             .id((d: { id: any }) => d.id);
           return d3
             .forceSimulation(nodes)
-            .force("edge", forceLink.distance(50).strength(0.5))
-            .force("charge", d3.forceManyBody().strength(-25))
+            .force("edge", forceLink.distance(60).strength(0.5))
+            .force("charge", d3.forceManyBody().strength(-0.05))
             .alphaMin(0.001);
         },
       }),
