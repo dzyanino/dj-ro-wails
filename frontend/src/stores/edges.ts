@@ -75,7 +75,7 @@ export const useEdgeStore = defineStore("edges", () => {
   }
 
   function clearEdges() {
-    edges.value = {};
+    Object.keys(edges.value).forEach((key) => delete edges.value[key]);
   }
 
   return {

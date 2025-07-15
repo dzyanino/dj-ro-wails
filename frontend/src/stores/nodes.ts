@@ -67,5 +67,9 @@ export const useNodeStore = defineStore("nodes", () => {
     }
   }
 
-  return { getNodes, setNodes, addNode, removeNode, updateNode };
+  function clearNodes() {
+    Object.keys(nodes.value).forEach((key) => delete nodes.value[key]);
+  }
+
+  return { getNodes, setNodes, addNode, removeNode, updateNode, clearNodes };
 });

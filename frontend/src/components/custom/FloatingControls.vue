@@ -6,11 +6,11 @@ import type { Layouts } from 'v-network-graph'
 import { RandomGraphJS } from '../../../wailsjs/go/services/Randomizer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon } from 'lucide-vue-next'
+import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, Trash2Icon } from 'lucide-vue-next'
 import NodeTable from './NodeTable.vue'
 
-const { getNodes, setNodes } = useNodeStore();
-const { getEdges, setEdges } = useEdgeStore();
+const { getNodes, setNodes, clearNodes } = useNodeStore();
+const { getEdges, setEdges, clearEdges } = useEdgeStore();
 
 const sidePanel = shallowRef<HTMLElement | null>(null)
 const panelWidth = shallowRef<number>(384)
@@ -19,22 +19,12 @@ const isExpanded = shallowRef<boolean>(false)
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isCreatingRandomGraph = shallowRef<boolean>(false);
+const isClearingGraph = shallowRef<boolean>(false);
 
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
 const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
 
 const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
-
-async function createRandomGraph() {
-  isCreatingRandomGraph.value = true;
-
-  const generatedGraph = await RandomGraphJS("node", 10, 14, 50, 50);
-  setNodes(generatedGraph.nodes);
-  setEdges(generatedGraph.edges);
-  layouts.value = generatedGraph.layouts;
-
-  isCreatingRandomGraph.value = false;
-}
 
 function toggleAddingMode(mode: 'node' | 'edge') {
   const togglingNode = mode === 'node';
@@ -45,6 +35,27 @@ function toggleAddingMode(mode: 'node' | 'edge') {
 
   selectedNodes.value = [];
   selectedEdges.value = [];
+}
+
+function clearGraph() {
+  isClearingGraph.value = true;
+
+  clearNodes();
+  clearEdges();
+  Object.keys(layouts.value.nodes).forEach((key) => delete layouts.value.nodes[key]);
+
+  isClearingGraph.value = false;
+}
+
+async function createRandomGraph() {
+  isCreatingRandomGraph.value = true;
+
+  const generatedGraph = await RandomGraphJS("node", 10, 14, 50, 50);
+  setNodes(generatedGraph.nodes);
+  setEdges(generatedGraph.edges);
+  layouts.value = generatedGraph.layouts;
+
+  isCreatingRandomGraph.value = false;
 }
 
 onMounted(async () => {
@@ -58,7 +69,7 @@ onMounted(async () => {
 <template>
   <div class="fixed top-0 right-0 bottom-0 m-4 flex items-start gap-2 transition-all duration-400"
     :style="{ transform: isExpanded ? 'translateX(0)' : `translateX(${panelWidth + 16}px)` }">
-    <div class="h-56 flex flex-col justify-between gap-2">
+    <div class="h-4/7 flex flex-col justify-between gap-2">
 
       <Button variant="secondary" @click="isExpanded = !isExpanded">
         <PanelRightClose v-if="isExpanded" />
@@ -74,9 +85,13 @@ onMounted(async () => {
           <StopCircleIcon v-if="isAddingEdge" />
           <SplineIcon v-else />
         </Button>
-        <Button @click="createRandomGraph()" :disabled="isCreatingRandomGraph" variant="secondary" class="mt-4">
+        <Button @click="createRandomGraph()" :disabled="isCreatingRandomGraph" variant="secondary" class="mt-12">
           <Loader2 v-if="isCreatingRandomGraph" class="w-4 h-4 animate-spin" />
           <ShuffleIcon v-else />
+        </Button>
+        <Button @click="clearGraph()" variant="secondary" class="mt-12">
+          <Loader2 v-if="isClearingGraph" class="w-4 h-4 animate-spin" />
+          <Trash2Icon v-else />
         </Button>
       </div>
 
