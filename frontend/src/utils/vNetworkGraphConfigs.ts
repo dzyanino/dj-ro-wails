@@ -7,7 +7,7 @@ import {
 
 export function createGraphConfig(
   theme: "light" | "dark",
-  nodeSelectable: boolean | number = false
+  isAddingEdge: boolean | number = false
 ) {
   const isDark = theme == "dark";
 
@@ -46,7 +46,7 @@ export function createGraphConfig(
       maxZoomLevel: 10,
     },
     node: {
-      selectable: nodeSelectable ? 2 : false,
+      selectable: isAddingEdge ? 2 : 1,
       normal: {
         color: isDark ? "#ff6699" : "#d13b6f",
         radius: 18,

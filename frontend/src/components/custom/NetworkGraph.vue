@@ -7,13 +7,13 @@ import { toast } from 'vue-sonner';
 import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue';
 import NumberField from './Inputs/NumberField.vue';
 
-const { getNodes } = useNodeStore();
-const { getEdges } = useEdgeStore();
+const { getNodes, removeNode } = useNodeStore();
+const { getEdges, removeEdge } = useEdgeStore();
 
 const configs = inject<ComputedRef<UserConfigs>>('configs');
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
-const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
+// const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
 
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
@@ -81,6 +81,25 @@ function addEdge() {
   edgeWeight.value = Math.floor(Math.random() * 50) + 1;
 }
 
+function deleteSelectedElements() {
+  if (selectedNodes.value.length > 0) {
+    selectedNodes.value.forEach(nodeId => {
+      removeNode(nodeId);
+      delete layouts.value.nodes[nodeId];
+    });
+
+    selectedNodes.value = [];
+  }
+
+  else if (selectedEdges.value.length > 0) {
+    selectedEdges.value.forEach(edgeId => {
+      removeEdge(edgeId)
+    });
+
+    selectedEdges.value = [];
+  }
+}
+
 watch(() => Object.keys(nodes.value).length, (newLength) => {
   nextNodeIndex.value = newLength + 1;
 }, { immediate: true });
@@ -89,9 +108,9 @@ watch(() => Object.keys(edges.value).length, (newLength) => {
   nextEdgeIndex.value = newLength + 1;
 }, { immediate: true });
 
-watch(isAddingEdge, (isIt: boolean) => {
-  if (configs?.value && configs.value.node) configs.value.node.selectable = isIt ? 2 : false;
-});
+// watch(isAddingEdge, (isIt: boolean) => {
+//   if (configs?.value && configs.value.node) configs.value.node.selectable = isIt ? 2 : 1;
+// });
 
 watch(selectedNodes, () => {
   isAddingEdgeDialogOpen.value = selectedNodes.value.length == 2;
@@ -101,7 +120,8 @@ watch(selectedNodes, () => {
 <template>
   <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
     :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs" :eventHandlers="eventHandlers"
-    :zoom-level="zoomLevel" class="h-full graph border rounded-lg bg-background dark:bg-background">
+    :zoom-level="zoomLevel" tabindex="0" @keyup.delete="deleteSelectedElements"
+    class="h-full graph border rounded-lg bg-background dark:bg-background">
     <template #edge-label="{ edge, ...slotProps }">
       <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps"></v-edge-label>
     </template>
