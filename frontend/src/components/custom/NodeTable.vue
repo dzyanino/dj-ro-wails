@@ -44,7 +44,7 @@ function getEdgeLabel(sourceId: string, targetId: string): string {
 <template>
     <Table class="border">
         <TableCaption />
-        <TableHeader>
+        <TableHeader class="sticky top-0 bg-background dark:bg-background">
             <TableRow>
                 <TableHead />
                 <TableHead 
