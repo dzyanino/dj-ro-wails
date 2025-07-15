@@ -92,7 +92,7 @@ func (r *Randomizer) RandomGraph(
 		}
 
 		edgePairs[key] = struct{}{}
-		label := fmt.Sprintf("%d", rand.Intn(100))
+		label := fmt.Sprintf("%d", rand.Intn(100) + 1)
 		edges[fmt.Sprintf("edge%d", edgeId)] = types.Edge{
 			Source: source,
 			Target: target,
