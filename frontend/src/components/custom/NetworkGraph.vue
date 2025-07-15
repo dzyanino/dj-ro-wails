@@ -3,6 +3,7 @@ import { inject, ref, shallowRef, watch, type ComputedRef, type Ref, type Shallo
 import { useNodeStore } from '@/stores/nodes';
 import { useEdgeStore } from '@/stores/edges';
 import { VNetworkGraph, VEdgeLabel, type EventHandlers, type Instance, type Layouts, type UserConfigs } from 'v-network-graph';
+import { toast } from 'vue-sonner';
 import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue';
 import NumberField from './Inputs/NumberField.vue';
 
@@ -52,15 +53,29 @@ function cancelEdgeAddition() {
 }
 
 function addEdge() {
-  const edgeId = `edge${nextEdgeIndex.value}`;
-  edges.value[edgeId] = {
-    id: edgeId,
-    source: `${selectedNodes.value[0]}`,
-    target: `${selectedNodes.value[1]}`,
-    label: edgeWeight.value.toString(),
-  };
+  const [sourceId, targetId] = selectedNodes.value;
+  const duplicationExists = Object.values(edges.value).some(edge =>
+    (edge.source === sourceId && edge.target === targetId) ||
+    (edge.source === targetId && edge.target === sourceId)
+  );
 
-  nextEdgeIndex.value++;
+  if (duplicationExists) {
+    toast('Attention', {
+      description: 'Un arc existe déjà pour ces sommets',
+    });
+  }
+  else {
+    const edgeId = `edge${nextEdgeIndex.value}`;
+    edges.value[edgeId] = {
+      id: edgeId,
+      source: `${selectedNodes.value[0]}`,
+      target: `${selectedNodes.value[1]}`,
+      label: edgeWeight.value.toString(),
+    };
+
+    nextEdgeIndex.value++;
+  }
+
 
   selectedNodes.value = [];
   edgeWeight.value = 1;
@@ -98,7 +113,7 @@ watch(selectedNodes, () => {
     <template #dialog-title>Ajouter un arc</template>
     <template #dialog-description>Veuillez saisir le poids</template>
     <template #dialog-content>
-      <NumberField v-model:model-value="edgeWeight" id="weight" label="Poids" :min="1" />
+      <NumberField v-model:model-value="edgeWeight" id="weight" :min="1" />
     </template>
   </ModalDialog>
 </template>
