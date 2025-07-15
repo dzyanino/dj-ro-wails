@@ -14,11 +14,10 @@ const configs = inject<ComputedRef<UserConfigs>>('configs');
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
+const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
 
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
 const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
-
-const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
 
 const graph = ref<Instance>();
 const nodes = ref(getNodes);
@@ -46,11 +45,11 @@ const eventHandlers: EventHandlers = {
 }
 const zoomLevel = shallowRef<number>(3);
 
-const edgeWeight = shallowRef<number>(1);
+const edgeWeight = shallowRef<number>(Math.floor(Math.random() * 50) + 1);
 
 function cancelEdgeAddition() {
   selectedNodes.value = [];
-  edgeWeight.value = 1;
+  edgeWeight.value = Math.floor(Math.random() * 50) + 1;
 }
 
 function addEdge() {
@@ -79,7 +78,7 @@ function addEdge() {
 
 
   selectedNodes.value = [];
-  edgeWeight.value = 1;
+  edgeWeight.value = Math.floor(Math.random() * 50) + 1;
 }
 
 watch(() => Object.keys(nodes.value).length, (newLength) => {
