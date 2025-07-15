@@ -23,14 +23,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <NumberField
-    :id="id"
-    :model-value="modelValue"
-    :min="min"
-    :max="max"
-    :step="step"
-    @update:model-value="emit('update:modelValue', $event)"
-  >
+  <NumberField :id="id" :model-value="modelValue" :min="min" :max="max" :step="step"
+    @update:model-value="emit('update:modelValue', $event)">
     <Label v-if="label" :for="id">{{ label }}</Label>
 
     <NumberFieldContent>
