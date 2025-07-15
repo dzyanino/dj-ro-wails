@@ -25,21 +25,21 @@ const emit = defineEmits<{
 <template>
   <AlertDialog :open="open" @update:open="emit('update:open', $event)">
     <AlertDialogTrigger as-child v-if="$slots.trigger">
-      <slot name="trigger"></slot>
+      <slot name="trigger" />
     </AlertDialogTrigger>
 
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>
-          <slot name="dialog-title"></slot>
+          <slot name="dialog-title" />
         </AlertDialogTitle>
         <AlertDialogDescription>
-          <slot name="dialog-description"></slot>
+          <slot name="dialog-description" />
         </AlertDialogDescription>
       </AlertDialogHeader>
 
-      <div class="grid gap-4 py-4">
-        <slot name="dialog-content"></slot>
+      <div v-if="$slots['dialog-content']" class="grid gap-4 py-4">
+        <slot name="dialog-content" />
       </div>
 
       <AlertDialogFooter>
