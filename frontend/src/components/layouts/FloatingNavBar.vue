@@ -30,26 +30,28 @@ const scheduleHide = () => {
 </script>
 
 <template>
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 z-50">
-        <Button variant="outline" @mouseenter="showNav(true)" @mouseleave="scheduleHide()"
-            class="mt-2 transition-transform">
-            <slot name="icon">
-                <ChevronDown class="transition-transform duration-300" :class="{ 'rotate-180': isVisible }" />
-            </slot>
-        </Button>
-
-    </div>
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 z-50 mt-2">
-        <Transition name="slide">
-            <Card v-show="isVisible" @mouseenter="showNav(true)" @mouseleave="scheduleHide()" class="py-2">
-                <CardContent class="px-2">
-                    <slot>
-                        <NavigationMenu />
-                    </slot>
-                </CardContent>
-            </Card>
-        </Transition>
-    </div>
+    <nav>
+        <div class="fixed top-0 left-1/2 -translate-x-1/2 z-50">
+            <Button variant="outline" @mouseenter="showNav(true)" @mouseleave="scheduleHide()"
+                class="mt-2 transition-transform">
+                <slot name="icon">
+                    <ChevronDown class="transition-transform duration-300" :class="{ 'rotate-180': isVisible }" />
+                </slot>
+            </Button>
+    
+        </div>
+        <div class="fixed top-0 left-1/2 -translate-x-1/2 z-50 mt-2">
+            <Transition name="slide">
+                <Card v-show="isVisible" @mouseenter="showNav(true)" @mouseleave="scheduleHide()" class="py-2">
+                    <CardContent class="px-2">
+                        <slot>
+                            <NavigationMenu />
+                        </slot>
+                    </CardContent>
+                </Card>
+            </Transition>
+        </div>
+    </nav>
 </template>
 
 <style scoped>

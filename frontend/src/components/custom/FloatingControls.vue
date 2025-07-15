@@ -88,7 +88,7 @@ onMounted(async () => {
           </div>
         </CardContent>
         <CardFooter>
-          Card Footer
+          <p>card footer</p>
         </CardFooter>
       </Card>
     </div>
