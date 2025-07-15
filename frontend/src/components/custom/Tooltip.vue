@@ -7,10 +7,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger as-child>
-        <slot name="trigger"></slot>
+        <slot name="trigger" />
       </TooltipTrigger>
       <TooltipContent>
-        <slot name="content"></slot>
+        <slot name="content" />
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>
