@@ -16,6 +16,7 @@ const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<bool
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
+const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
 
 const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
 
@@ -90,8 +91,6 @@ watch(() => Object.keys(edges.value).length, (newLength) => {
 }, { immediate: true });
 
 watch(isAddingEdge, (isIt: boolean) => {
-  selectedNodes.value = [];
-
   if (configs?.value && configs.value.node) configs.value.node.selectable = isIt ? 2 : false;
 });
 
@@ -101,9 +100,9 @@ watch(selectedNodes, () => {
 </script>
 
 <template>
-  <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" :nodes="nodes" :edges="edges" :layouts="layouts"
-    :configs="configs" :eventHandlers="eventHandlers" :zoom-level="zoomLevel"
-    class="h-full graph border rounded-lg bg-background dark:bg-background">
+  <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
+    :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs" :eventHandlers="eventHandlers"
+    :zoom-level="zoomLevel" class="h-full graph border rounded-lg bg-background dark:bg-background">
     <template #edge-label="{ edge, ...slotProps }">
       <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps"></v-edge-label>
     </template>

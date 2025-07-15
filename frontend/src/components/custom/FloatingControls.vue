@@ -20,7 +20,8 @@ const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<bool
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isCreatingRandomGraph = shallowRef<boolean>(false);
 
-// const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
+const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
+const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
 
 const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })))
 
@@ -33,6 +34,17 @@ async function createRandomGraph() {
   layouts.value = generatedGraph.layouts;
 
   isCreatingRandomGraph.value = false;
+}
+
+function toggleAddingMode(mode: 'node' | 'edge') {
+  const togglingNode = mode === 'node';
+  const togglingEdge = mode === 'edge';
+
+  isAddingNode.value = togglingNode ? !isAddingNode.value : false;
+  isAddingEdge.value = togglingEdge ? !isAddingEdge.value : false;
+
+  selectedNodes.value = [];
+  selectedEdges.value = [];
 }
 
 onMounted(async () => {
@@ -54,13 +66,11 @@ onMounted(async () => {
       </Button>
 
       <div class="flex flex-col gap-2">
-        <Button @click="isAddingNode = !isAddingNode; isAddingEdge = false"
-          :variant="isAddingNode ? 'default' : 'secondary'">
+        <Button @click="toggleAddingMode('node')" :variant="isAddingNode ? 'default' : 'secondary'">
           <StopCircleIcon v-if="isAddingNode" />
           <CirclePlusIcon v-else />
         </Button>
-        <Button @click="isAddingEdge = !isAddingEdge; isAddingNode = false"
-          :variant="isAddingEdge ? 'default' : 'secondary'">
+        <Button @click="toggleAddingMode('edge')" :variant="isAddingEdge ? 'default' : 'secondary'">
           <StopCircleIcon v-if="isAddingEdge" />
           <SplineIcon v-else />
         </Button>
