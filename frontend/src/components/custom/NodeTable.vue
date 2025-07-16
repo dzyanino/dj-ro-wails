@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, type PropType } from 'vue';
 import type { EdgeWithId, NodeWithId } from 'v-network-graph';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const { nodes, edges } = defineProps({
   nodes: {
@@ -15,7 +15,6 @@ const { nodes, edges } = defineProps({
 });
 
 // Cache node IDs to prevent reactive loops
-// const nodeIds = computed(() => Object.keys(nodes).sort());
 const nodeIds = computed(() =>
   Object.keys(nodes).sort((a, b) => {
     const getNumber = (id: string) =>
@@ -43,7 +42,6 @@ function getEdgeLabel(sourceId: string, targetId: string): string {
 
 <template>
   <Table class="border">
-    <TableCaption />
     <TableHeader class="sticky top-0 bg-background dark:bg-background">
       <TableRow>
         <TableHead />
