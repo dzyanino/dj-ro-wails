@@ -16,6 +16,7 @@ type NodeWithId struct {
 	IdentifiedObject
 }
 type Nodes map[string]Node
+type NodesWithId map[string]NodeWithId
 
 /*
 * Different types of edges
@@ -30,6 +31,7 @@ type EdgeWithId struct {
 	IdentifiedObject
 }
 type Edges map[string]Edge
+type EdgesWithId map[string]EdgeWithId
 
 /*
 * Layouting

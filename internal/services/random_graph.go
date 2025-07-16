@@ -33,23 +33,27 @@ func makeEdgeKey(a, b string) string {
 func (r *Randomizer) RandomGraph(
 	nodeName string,
 	nodeCount, edgeCount, width, height int,
-) (types.Nodes, types.Edges, types.Layouts) {
+) (types.NodesWithId, types.EdgesWithId, types.Layouts) {
 
-	nodes := make(types.Nodes)
+	nodes := make(types.NodesWithId)
 
 	loweredName := cases.Lower(language.English).String(nodeName)   /* used for key/id */
 	titledName := cases.Title(language.English).String(loweredName) /* used for title/display */
 
 	for i := 1; i <= nodeCount; i++ {
+		id := fmt.Sprintf("%s%d", loweredName, i)
 		name := fmt.Sprintf("%s %d", titledName, i)
 
 		/* creates nodes with corresponding name and key */
-		nodes[fmt.Sprintf("%s%d", loweredName, i)] = types.Node{
-			Name: &name,
+		nodes[fmt.Sprintf("%s%d", loweredName, i)] = types.NodeWithId{
+			IdentifiedObject: types.IdentifiedObject{ ID: id },
+			Node: types.Node{
+				Name: &name,
+			},
 		}
 	}
 
-	edges := make(types.Edges)
+	edges := make(types.EdgesWithId)
 	edgePairs := make(map[string]struct{})
 	edgeId := 1
 
@@ -66,12 +70,15 @@ func (r *Randomizer) RandomGraph(
 		key := makeEdgeKey(source, target)
 
 		edgePairs[key] = struct{}{}
-		label := fmt.Sprintf("%d", rand.Intn(100))
+		label := fmt.Sprintf("%d", rand.Intn(100) + 1)
 
-		edges[fmt.Sprintf("edge%d", edgeId)] = types.Edge{
-			Source: source,
-			Target: target,
-			Label:  label,
+		edges[fmt.Sprintf("edge%d", edgeId)] = types.EdgeWithId{
+			IdentifiedObject: types.IdentifiedObject{ ID: fmt.Sprintf("edge%d", edgeId) },
+			Edge: types.Edge{
+				Source: source,
+				Target: target,
+				Label:  label,
+			},
 		}
 
 		edgeId++
@@ -93,10 +100,13 @@ func (r *Randomizer) RandomGraph(
 
 		edgePairs[key] = struct{}{}
 		label := fmt.Sprintf("%d", rand.Intn(100) + 1)
-		edges[fmt.Sprintf("edge%d", edgeId)] = types.Edge{
-			Source: source,
-			Target: target,
-			Label:  label,
+		edges[fmt.Sprintf("edge%d", edgeId)] = types.EdgeWithId{
+			IdentifiedObject: types.IdentifiedObject{ ID: fmt.Sprintf("edge%d", edgeId) },
+			Edge: types.Edge{
+				Source: source,
+				Target: target,
+				Label:  label,
+			},
 		}
 
 		edgeId++
