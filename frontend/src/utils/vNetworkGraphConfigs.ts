@@ -61,6 +61,9 @@ export function createGraphConfig(
         directionAutoAdjustment: true,
         color: isDark ? "white" : "black",
       },
+      focusring: {
+        color: isAddingEdge ? "blue" : "yellow",
+      },
       zOrder: {
         enabled: true,
         zIndex: (n) => n.zIndex,

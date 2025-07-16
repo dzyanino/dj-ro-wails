@@ -13,7 +13,7 @@ const { getEdges, removeEdge } = useEdgeStore();
 const configs = inject<ComputedRef<UserConfigs>>('configs');
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
-// const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
+const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
 
 const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
@@ -113,8 +113,8 @@ watch(() => Object.keys(edges.value).length, (newLength) => {
 // });
 
 watch(selectedNodes, () => {
-  isAddingEdgeDialogOpen.value = selectedNodes.value.length == 2;
-})
+  isAddingEdgeDialogOpen.value = isAddingEdge.value && selectedNodes.value.length == 2;
+});
 </script>
 
 <template>
