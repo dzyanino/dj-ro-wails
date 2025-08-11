@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { defineProps, computed } from "vue";
-import { types } from "../../../wailsjs/go/models";
+import { types } from "../../../../wailsjs/go/models";
 import {
   Table,
   TableBody,
@@ -23,7 +23,10 @@ const sortedNodes = computed(() => {
     (n) => n.id !== props.startNodeId && n.id !== props.endNodeId
   );
 
-  others.sort((a, b) => a.id.localeCompare(b.id)); // ou par nom
+  // Sort others naturally (node1, node2, node10 instead of node1, node10, node2)
+  others.sort((a, b) => {
+    return naturalCompare(a.id, b.id);
+  });
 
   const result = [];
   if (startNode) result.push(startNode);
@@ -32,6 +35,34 @@ const sortedNodes = computed(() => {
 
   return result;
 });
+
+// Natural comparison function for proper numeric sorting
+function naturalCompare(a: string, b: string): number {
+  const ax: (string | number)[] = [];
+  const bx: (string | number)[] = [];
+
+  a.replace(/(\d+)|(\D+)/g, (_, $1, $2) => {
+		//@ts-ignore
+    ax.push([$1 || Infinity, $2 || ""]);
+    return "";
+  });
+  b.replace(/(\d+)|(\D+)/g, (_, $1, $2) => {
+		//@ts-ignore
+    bx.push([$1 || Infinity, $2 || ""]);
+    return "";
+  });
+
+  while (ax.length && bx.length) {
+		//@ts-ignore
+    const an = ax.shift() as [string | number, string];
+		//@ts-ignore
+    const bn = bx.shift() as [string | number, string];
+    const nn = (an[0] as number) - (bn[0] as number) || an[1].localeCompare(bn[1]);
+    if (nn) return nn;
+  }
+
+  return ax.length - bx.length;
+}
 
 const nodeIds = computed(() => sortedNodes.value.map((n) => n.id));
 
@@ -61,19 +92,19 @@ function getCellData(
     // We have data for this exact step
     let weightText = currentStepProps.weightTo < 0 ? "∞" : `${currentStepProps.weightTo}`;
     let previousNode = currentStepProps.previousNode || "";
-    let className = "text-black";
+    let className = "";
 
     if (currentStepProps.marked) {
       // This cell is marked - yellow background
       className = "bg-yellow-300 dark:bg-yellow-500";
     } else if (hasBeenMarkedBefore) {
       // Column was marked before this step - cell should be grayed out
-      className = "bg-gray-300 dark:bg-gray-500 text-gray-600";
+      className = "bg-gray-300 dark:bg-gray-500 text-gray-600 dark:text-gray-400";
     } else if (!currentStepProps.valid && currentStepProps.weightTo < 0) {
       // Invalid cell with negative weight (initial infinity)
       className = "text-gray-400";
     } else if (!currentStepProps.valid) {
-      className = "bg-gray-300 dark:bg-gray-500 text-gray-600";
+      className = "bg-gray-300 dark:bg-gray-500 text-gray-600 dark:text-gray-400";
     }
 
     return { weightText, previousNode, className };
@@ -110,45 +141,45 @@ function getCellData(
 </script>
 
 <template>
-  <Table
-    class="border-collapse border border-slate-400 w-full text-sm text-center"
-  >
-    <TableHeader class="sticky top-0 bg-background dark:bg-background z-10">
-      <TableRow>
-        <TableHead class="border border-slate-300">Étape</TableHead>
-        <TableHead
-          v-for="id in nodeIds"
-          :key="id"
-          class="border border-slate-300"
-        >
-          {{ id.toUpperCase() }}
-        </TableHead>
-      </TableRow>
-    </TableHeader>
-
-    <TableBody>
-      <TableRow v-for="step in stepIndices" :key="step">
-        <TableCell class="border border-slate-300 font-medium">{{
-          step
-        }}</TableCell>
-        <TableCell
-          v-for="node in sortedNodes"
-          :key="node.id"
-          :class="
-            getCellData(node, step).className + ' border border-slate-300 relative'
-          "
-        >
-          <div class="inline-block">
-            {{ getCellData(node, step).weightText }}
-            <sub 
-              v-if="getCellData(node, step).previousNode" 
-              class="text-xs opacity-75"
-            >
-              {{ getCellData(node, step).previousNode.toUpperCase() }}
-            </sub>
-          </div>
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
+    <Table
+      class="border-collapse border border-slate-400 w-full text-sm text-center"
+    >
+      <TableHeader class="sticky top-0 bg-background dark:bg-background z-10">
+        <TableRow>
+          <TableHead class="border border-slate-300">Étape</TableHead>
+          <TableHead
+            v-for="id in nodeIds"
+            :key="id"
+            class="border border-slate-300"
+          >
+            {{ id.toUpperCase() }}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+  
+      <TableBody>
+        <TableRow v-for="step in stepIndices" :key="step">
+          <TableCell class="border border-slate-300 font-medium">{{
+            step
+          }}</TableCell>
+          <TableCell
+            v-for="node in sortedNodes"
+            :key="node.id"
+            :class="
+              getCellData(node, step).className + ' border border-slate-300 relative'
+            "
+          >
+            <div class="inline-block">
+              {{ getCellData(node, step).weightText }}
+              <sub 
+                v-if="getCellData(node, step).previousNode" 
+                class="text-xs opacity-75"
+              >
+                {{ getCellData(node, step).previousNode.toUpperCase() }}
+              </sub>
+            </div>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
 </template>

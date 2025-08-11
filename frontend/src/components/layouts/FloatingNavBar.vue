@@ -2,7 +2,7 @@
 import { provide, shallowRef } from 'vue'
 import { Button } from '@/components/ui/button'
 import { ChevronDown } from 'lucide-vue-next'
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import NavigationMenu from '@/components/custom/NavigationMenu.vue';
 
 const isVisible = shallowRef<boolean>(false)

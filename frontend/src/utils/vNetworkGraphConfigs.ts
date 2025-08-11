@@ -7,7 +7,8 @@ import {
 
 export function createGraphConfig(
   theme: "light" | "dark",
-  isAddingEdge: boolean | number = false
+  isAddingEdge: boolean | number = false,
+  resolution: boolean = false
 ) {
   const isDark = theme == "dark";
 
@@ -31,16 +32,34 @@ export function createGraphConfig(
       layoutHandler: new ForceLayout({
         positionFixedByDrag: false,
         positionFixedByClickWithAltKey: true,
-        createSimulation: (d3, nodes, edges) => {
-          const forceLink = d3
-            .forceLink<ForceNodeDatum, ForceEdgeDatum>(edges)
-            .id((d: { id: any }) => d.id);
-          return d3
-            .forceSimulation(nodes)
-            .force("edge", forceLink.distance(60).strength(0.5))
-            .force("charge", d3.forceManyBody().strength(-0.05))
-            .alphaMin(0.001);
-        },
+        createSimulation: resolution
+          ? (d3, nodes, edges) => {
+              const forceLink = d3
+                .forceLink<ForceNodeDatum, ForceEdgeDatum>(edges)
+                .id((d: { id: any }) => d.id)
+                .distance(100) // Increased distance for better spacing
+                .strength(0.8); // Stronger link force for better structure
+
+              return d3
+                .forceSimulation(nodes)
+                .force("edge", forceLink)
+                .force("charge", d3.forceManyBody().strength(-300)) // Stronger repulsion for spacing
+                .force("center", d3.forceCenter()) // Keep graph centered
+                .force("collision", d3.forceCollide().radius(30)) // Prevent node overlap
+                .alphaMin(0.001) // Fine-tune stopping condition
+                .alphaDecay(0.0228) // Control simulation decay rate
+                .velocityDecay(0.4); // Control velocity decay
+            }
+          : (d3, nodes, edges) => {
+              const forceLink = d3
+                .forceLink<ForceNodeDatum, ForceEdgeDatum>(edges)
+                .id((d: { id: any }) => d.id);
+              return d3
+                .forceSimulation(nodes)
+                .force("edge", forceLink.distance(100).strength(0.5))
+                .force("charge", d3.forceManyBody().strength(-0.05))
+                .alphaMin(0.001);
+            },
       }),
       minZoomLevel: 0.5,
       maxZoomLevel: 10,
@@ -72,7 +91,7 @@ export function createGraphConfig(
       },
     },
     edge: {
-      selectable: true,
+      selectable: false,
       gap: 50,
       normal: {
         color: isDark ? "#ffb3cc" : "#f18ca3",
@@ -96,5 +115,17 @@ export function createGraphConfig(
         bringToFrontOnSelected: true,
       },
     },
+    path: resolution
+      ? {
+          visible: true,
+          path: {
+            width: 10,
+            dasharray: "10 16",
+            animate: true,
+            animationSpeed: 40,
+            color: "red",
+          },
+        }
+      : {},
   });
 }

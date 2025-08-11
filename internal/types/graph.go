@@ -5,8 +5,8 @@ type IdentifiedObject struct {
 }
 
 /*
-* Different types of nodes
- */
+Different types of nodes
+*/
 type Node struct {
 	Name       *string        `json:"name,omitempty"`
 	Properties map[string]any `json:"properties,omitempty"`
@@ -19,8 +19,8 @@ type Nodes map[string]Node
 type NodesWithId map[string]NodeWithId
 
 /*
-* Different types of edges
- */
+Different types of edges
+*/
 type Edge struct {
 	Source string `json:"source"`
 	Target string `json:"target"`
@@ -34,8 +34,8 @@ type Edges map[string]Edge
 type EdgesWithId map[string]EdgeWithId
 
 /*
-* Layouting
- */
+Layouting
+*/
 type Position struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
