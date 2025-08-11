@@ -17,8 +17,8 @@ func NewRandomizer() *Randomizer {
 }
 
 /*
- * Function to create a key for each edge by comparing both sides to check for duplication
- */
+Function to create a key for each edge by comparing both sides to check for duplication
+*/
 func makeEdgeKey(a, b string) string {
 	if a > b {
 		a, b = b, a
@@ -28,8 +28,8 @@ func makeEdgeKey(a, b string) string {
 }
 
 /*
- * Function to create a random graph from counts and node's name
- */
+Function to create a random graph from counts and node's name
+*/
 func (r *Randomizer) RandomGraph(
 	nodeName string,
 	nodeCount, edgeCount, width, height int,
@@ -46,7 +46,7 @@ func (r *Randomizer) RandomGraph(
 
 		/* creates nodes with corresponding name and key */
 		nodes[fmt.Sprintf("%s%d", loweredName, i)] = types.NodeWithId{
-			IdentifiedObject: types.IdentifiedObject{ ID: id },
+			IdentifiedObject: types.IdentifiedObject{ID: id},
 			Node: types.Node{
 				Name: &name,
 			},
@@ -70,10 +70,10 @@ func (r *Randomizer) RandomGraph(
 		key := makeEdgeKey(source, target)
 
 		edgePairs[key] = struct{}{}
-		label := fmt.Sprintf("%d", rand.Intn(100) + 1)
+		label := fmt.Sprintf("%d", rand.Intn(10)+1)
 
 		edges[fmt.Sprintf("edge%d", edgeId)] = types.EdgeWithId{
-			IdentifiedObject: types.IdentifiedObject{ ID: fmt.Sprintf("edge%d", edgeId) },
+			IdentifiedObject: types.IdentifiedObject{ID: fmt.Sprintf("edge%d", edgeId)},
 			Edge: types.Edge{
 				Source: source,
 				Target: target,
@@ -99,9 +99,9 @@ func (r *Randomizer) RandomGraph(
 		}
 
 		edgePairs[key] = struct{}{}
-		label := fmt.Sprintf("%d", rand.Intn(100) + 1)
+		label := fmt.Sprintf("%d", rand.Intn(10)+1)
 		edges[fmt.Sprintf("edge%d", edgeId)] = types.EdgeWithId{
-			IdentifiedObject: types.IdentifiedObject{ ID: fmt.Sprintf("edge%d", edgeId) },
+			IdentifiedObject: types.IdentifiedObject{ID: fmt.Sprintf("edge%d", edgeId)},
 			Edge: types.Edge{
 				Source: source,
 				Target: target,
@@ -129,10 +129,10 @@ func (r *Randomizer) RandomGraph(
 }
 
 /*
-* Needs another function that will combine the data(nodes/edges/layouts) into a single map
-* As the JS part is expecting a single object regrouping the three of them
-* And thus making it serializable through JSON
- */
+Needs another function that will combine the data(nodes/edges/layouts) into a single map.
+As the JS part is expecting a single object regrouping the three of them.
+And thus making it serializable through JSON
+*/
 func (r *Randomizer) RandomGraphJS(
 	nodeName string,
 	nodeCount, edgeCount, width, height int,

@@ -3,8 +3,8 @@ import { computed, onBeforeMount, onBeforeUnmount, provide, ref, shallowRef } fr
 import { useColorMode } from '@vueuse/core';
 import type { Layouts } from 'v-network-graph';
 import FloatingNavBar from '@/components/layouts/FloatingNavBar.vue';
-import FloatingControls from '@/components/custom/FloatingControls.vue';
-import NetworkGraph from '@/components/custom/NetworkGraph.vue';
+import FloatingControls from '@/components/custom/DataPage/FloatingControls.vue';
+import NetworkGraph from '@/components/custom/DataPage/NetworkGraph.vue';
 import isMobile from '@/utils/isMobile';
 import { createGraphConfig } from '@/utils/vNetworkGraphConfigs';
 
@@ -21,7 +21,7 @@ const isAddingNode = shallowRef<boolean>(false);
 const isAddingEdge = shallowRef<boolean>(false);
 const layouts = ref<Layouts>({ nodes: {} });
 
-const graphConfigs = computed(() => createGraphConfig(theme.value, isAddingEdge.value));
+const graphConfigs = computed(() => createGraphConfig(theme.value, isAddingEdge.value, false));
 
 const selectedNodes = ref<string[]>([]);
 const selectedEdges = ref<string[]>([]);

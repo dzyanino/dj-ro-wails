@@ -5,7 +5,7 @@ import { useEdgeStore } from '@/stores/edges';
 import { VNetworkGraph, VEdgeLabel, type EventHandlers, type Instance, type Layouts, type UserConfigs } from 'v-network-graph';
 import { toast } from 'vue-sonner';
 import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue';
-import NumberField from './Inputs/NumberField.vue';
+import NumberField from '@/components/custom/Inputs/NumberField.vue';
 
 const { getNodes, removeNode } = useNodeStore();
 const { getEdges, removeEdge } = useEdgeStore();

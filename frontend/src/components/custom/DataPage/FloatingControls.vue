@@ -3,14 +3,14 @@ import { onMounted, shallowRef, nextTick, inject, ref, type ShallowRef, type Ref
 import { useNodeStore } from '@/stores/nodes'
 import { useEdgeStore } from '@/stores/edges'
 import type { Layouts } from 'v-network-graph'
-import { RandomGraphJS } from '../../../wailsjs/go/services/Randomizer'
+import { RandomGraphJS } from '../../../../wailsjs/go/services/Randomizer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, BrushCleaningIcon, WaypointsIcon, RouteIcon } from 'lucide-vue-next'
 import NodeTable from './NodeTable.vue'
-import ModalDialog from './Dialogs/ModalDialog.vue'
-import Select from './Selects/Select.vue'
+import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue'
+import Select from '@/components/custom/Selects/Select.vue'
 
 const { getNodes, setNodes, clearNodes } = useNodeStore();
 const { getEdges, setEdges, clearEdges } = useEdgeStore();
@@ -81,13 +81,15 @@ function clearGraph() {
 async function createRandomGraph() {
   isCreatingRandomGraph.value = true;
 
-  const generatedGraph = await RandomGraphJS("node", 10, 14, 50, 50);
+  const generatedGraph = await RandomGraphJS("sommet", 10, 14, 50, 50);
   setNodes(generatedGraph.nodes);
   setEdges(generatedGraph.edges);
   layouts.value = generatedGraph.layouts;
 
   isCreatingRandomGraph.value = false;
 }
+console.log(getNodes)
+console.log(getEdges)
 
 onMounted(async () => {
   await nextTick()
@@ -181,10 +183,14 @@ watch([selectedStart, selectedEnd], ([start, end]) => {
             </CardContent>
             <CardFooter>
               <div class="flex flex-row w-full gap-4 justify-between">
-                <Button>Chemin optimal
-                  <WaypointsIcon />
+                <Button :disabled="!selectedStart || !selectedEnd" as-child>
+                  <RouterLink :to="`/resolution?start=${selectedStart}&end=${selectedEnd}`">
+                    Chemin optimal
+                    <WaypointsIcon />
+                  </RouterLink>
                 </Button>
-                <Button variant="secondary">Chemin maximal
+                <Button :disabled="!selectedStart || !selectedEnd" variant="secondary">
+                  Chemin maximal
                   <RouteIcon />
                 </Button>
               </div>
