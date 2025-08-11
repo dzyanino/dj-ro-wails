@@ -7,16 +7,16 @@ import (
 	"strconv"
 )
 
-type dijkstra struct{}
+type Dijkstra struct{}
 
-func NewDijkstra() *dijkstra {
-	return &dijkstra{}
+func NewDijkstra() *Dijkstra {
+	return &Dijkstra{}
 }
 
 /*
 Initialise un tableau de noeuds avec des propriétés
 */
-func (d *dijkstra) InitializeNodeArray(nodes types.NodesWithId, startingNodeID string, endingNodeID string) []types.ResolutionNode {
+func (d *Dijkstra) InitializeNodeArray(nodes types.NodesWithId, startingNodeID string, endingNodeID string) []types.ResolutionNode {
 	result := make([]types.ResolutionNode, 0, len(nodes))
 
 	otherIDs := make([]string, 0, len(nodes)-2)
@@ -59,13 +59,19 @@ func (d *dijkstra) InitializeNodeArray(nodes types.NodesWithId, startingNodeID s
 /*
 Extrait les noeuds marqués depuis la nodeArray
 */
-func extractMarkedNodes(nodeArray []types.ResolutionNode) (markedNodes []string) {
+func extractMarkedNodes(nodeArray []types.ResolutionNode) []string {
+	markedSet := make(map[string]bool)
 	for _, node := range nodeArray {
 		for _, nodeProp := range node.NodePropsList {
 			if nodeProp.Marked {
-				markedNodes = append(markedNodes, node.ID)
+				markedSet[node.ID] = true
+				break // on sort dès qu'on trouve une cellule marquée pour ce noeud
 			}
 		}
+	}
+	markedNodes := make([]string, 0, len(markedSet))
+	for id := range markedSet {
+		markedNodes = append(markedNodes, id)
 	}
 	return markedNodes
 }
@@ -124,6 +130,17 @@ func updateNeighborDistances(
 			continue
 		}
 
+		colMarked := false
+		for _, np := range nodeArray[neighborIndex].NodePropsList {
+			if np.Marked {
+				colMarked = true
+				break
+			}
+		}
+		if colMarked {
+			continue
+		}
+
 		weight, err := strconv.Atoi(edge.Label)
 		if err != nil {
 			return fmt.Errorf("poids invalide sur edge %s: %v", edge.ID, err)
@@ -169,7 +186,7 @@ func minimalEdgeSum(nodes []types.ResolutionNode) (minimalNodeIndex int, minimal
 	return
 }
 
-func (d *dijkstra) ReconstructPath(nodeArray []types.ResolutionNode) ([]string, error) {
+func (d *Dijkstra) ReconstructPath(nodeArray []types.ResolutionNode) ([]string, error) {
 	if len(nodeArray) == 0 {
 		return nil, fmt.Errorf("nodeArray vide")
 	}
@@ -226,47 +243,59 @@ Prends la liste des noeuds, des arcs, la `nodeArray` générée et le `currentSt
 Pour retourner la nouvelle `newNodeArray`, les `markedNodes`, `currentNode`,
 si oui l'algorithme est fini avec `finished`, et potentiellement un erreur `err`
 */
-func (d *dijkstra) Step(
+func (d *Dijkstra) Step(
 	nodes types.NodesWithId,
 	edges types.EdgesWithId,
 	nodeArray []types.ResolutionNode,
 	currentStep int,
-) (newNodeArray []types.ResolutionNode, markedNodes []string, currentNode string, finished bool, err error) {
+) (types.StepResult, error) {
 
 	nodeIndex, stepIndex, minDist := minimalEdgeSum(nodeArray)
 
 	if nodeIndex == -1 {
 		/* Aucun noeud valide non marqué trouvé → fin ou pas de solution */
-		return nodeArray, extractMarkedNodes(nodeArray), "", false, nil
+		return types.StepResult{
+			NodeArray:   nodeArray,
+			MarkedNodes: extractMarkedNodes(nodeArray),
+			CurrentNode: "",
+			Finished:    false,
+		}, nil
 	}
 
 	/* On fait une copie profonde du nodeArray et de ses NodePropsList */
-	newNodeArray = deepCopyNodeArray(nodeArray)
+	newNodeArray := deepCopyNodeArray(nodeArray)
 
 	/* Marquer la cellule minimale trouvée */
 	nodeProp := newNodeArray[nodeIndex].NodePropsList[stepIndex]
 	nodeProp.Marked = true
 	newNodeArray[nodeIndex].NodePropsList[stepIndex] = nodeProp
 
-	currentNode = newNodeArray[nodeIndex].ID
+	currentNode := newNodeArray[nodeIndex].ID
 
 	/* Vérifier si le dernier noeud (endingNode) est marqué à la même étape stepIndex */
 	lastNode := newNodeArray[len(newNodeArray)-1]
 	nodeProps, exists := lastNode.NodePropsList[stepIndex]
 
 	if exists && nodeProps.Marked {
-		return newNodeArray, extractMarkedNodes(newNodeArray), currentNode, true, nil
+		return types.StepResult{
+			NodeArray:   newNodeArray,
+			MarkedNodes: extractMarkedNodes(newNodeArray),
+			CurrentNode: currentNode,
+			Finished:    true,
+		}, nil
 	}
 
 	nextStep := stepIndex + 1
 
 	/* Mettre à jour les voisins sur la ligne suivante nextStep */
-	err = updateNeighborDistances(newNodeArray, currentNode, edges, minDist, nextStep)
-	if err != nil {
-		return nodeArray, nil, "", false, err
+	if err := updateNeighborDistances(newNodeArray, currentNode, edges, minDist, nextStep); err != nil {
+		return types.StepResult{}, err
 	}
 
-	markedNodes = extractMarkedNodes(newNodeArray)
-
-	return newNodeArray, markedNodes, currentNode, false, nil
+	return types.StepResult{
+		NodeArray:   newNodeArray,
+		MarkedNodes: extractMarkedNodes(newNodeArray),
+		CurrentNode: currentNode,
+		Finished:    false,
+	}, nil
 }

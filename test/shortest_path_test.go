@@ -44,10 +44,15 @@ func TestDijkstraStepByStep(t *testing.T) {
 
 	for !finished {
 		var err error
-		nodeArray, markedNodes, currentNode, finished, err = d.Step(nodes, edges, nodeArray, currentStep)
+		res, err := d.Step(nodes, edges, nodeArray, currentStep)
 		if err != nil {
 			t.Fatalf("Erreur Step: %v", err)
 		}
+		nodeArray = res.NodeArray
+		markedNodes = res.MarkedNodes
+		currentNode = res.CurrentNode
+		finished = res.Finished
+
 		t.Logf("Étape %d: noeud courant = %s, marqués = %v", currentStep, currentNode, markedNodes)
 		currentStep++
 	}
