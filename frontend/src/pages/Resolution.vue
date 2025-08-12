@@ -31,7 +31,7 @@ const theme = computed(() =>
     : (mode.value as "dark" | "light")
 );
 
-const configs = computed<UserConfigs>(() => createGraphConfig(theme.value, false, true));
+const configs = computed<UserConfigs>(() => createGraphConfig(theme.value, false, true, false));
 
 const { getNodes } = useNodeStore();
 const { getEdges } = useEdgeStore();
@@ -118,14 +118,18 @@ onMounted(async () => {
 	<FloatingNavBar />
 	<main>
 		<div class="min-h-screen h-screen flex">
-			<div class="flex flex-col w-1/2 gap-y-4 p-8">
-				<div class="flex justify-end">
+
+			<div class="flex flex-col w-1/2 h-full overflow-scroll gap-y-4 p-8">
+				<div class="flex justify-between items-center">
+					<h1 class="text-lg font-bold">Chemin optimal</h1>
 					<Button :disabled="finished" @click="nextStep" class="max-w-fit">
 						Prochaine étape
 						<ArrowRight />
 					</Button>
 				</div>
+
 				<Separator />
+				
 				<div class="flex gap-x-4 items-center justify-start text-xs">
 					<p>
 						Étape actuelle: <Badge variant="outline">{{ currentStep }}</Badge>
@@ -147,13 +151,15 @@ onMounted(async () => {
 							</div> -->
 				</div>
 	
-				<div class="overflow-auto">
-					<ResolutionTable
-						:start-node-id="startingNodeID"
-						:end-node-id="endingNodeID"
-						:nodes="nodeArray"
-						class="w-full h-full"
-					/>
+				<div class="min-h-fit overflow-auto">
+					<div>
+						<ResolutionTable
+							:start-node-id="startingNodeID"
+							:end-node-id="endingNodeID"
+							:nodes="nodeArray"
+							class="w-full h-full"
+						/>
+					</div>
 				</div>
 	
 				<Separator />
@@ -182,7 +188,7 @@ onMounted(async () => {
 					:edges="edges"
 					:paths="networkPath"
 					:configs="configs"
-					:zoom-level="3"
+					:zoom-level="1"
 					tabindex="0"
 					@click="
 						graphMarkedNodes.length <= 0 ? (graphMarkedNodes = markedNodes) : null

@@ -23,7 +23,7 @@ const isAddingNode = shallowRef<boolean>(false);
 const isAddingEdge = shallowRef<boolean>(false);
 const layouts = ref<Layouts>({ nodes: {} });
 
-const graphConfigs = computed(() => createGraphConfig(theme.value, isAddingEdge.value, false));
+const graphConfigs = computed(() => createGraphConfig(theme.value, isAddingEdge.value, false, false));
 
 const selectedNodes = ref<string[]>([]);
 const selectedEdges = ref<string[]>([]);
