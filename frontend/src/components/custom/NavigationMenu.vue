@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import ThemeSwitcher from './ThemeSwitcher.vue';
 
 const navLinks = [
-  { to: '#/data', title: 'Résoudre' },
+  { to: '#/data', title: 'Graphe' },
   { to: '#/aide', title: 'Aide' },
 ]
 </script>
