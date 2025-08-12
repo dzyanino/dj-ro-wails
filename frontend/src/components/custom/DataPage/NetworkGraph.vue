@@ -1,37 +1,64 @@
 <script lang="ts" setup>
-import { inject, ref, shallowRef, watch, type ComputedRef, type Ref, type ShallowRef } from 'vue';
-import { useNodeStore } from '@/stores/nodes';
-import { useEdgeStore } from '@/stores/edges';
-import { VNetworkGraph, VEdgeLabel, type EventHandlers, type Instance, type Layouts, type UserConfigs } from 'v-network-graph';
-import { toast } from 'vue-sonner';
-import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue';
-import NumberField from '@/components/custom/Inputs/NumberField.vue';
+import {
+  inject,
+  ref,
+  shallowRef,
+  watch,
+  type ComputedRef,
+  type Ref,
+  type ShallowRef,
+} from "vue";
+import { useNodeStore } from "@/stores/nodes";
+import { useEdgeStore } from "@/stores/edges";
+import {
+  VNetworkGraph,
+  VEdgeLabel,
+  type EventHandlers,
+  type Instance,
+  type Layouts,
+  type UserConfigs,
+} from "v-network-graph";
+import { toast } from "vue-sonner";
+import ModalDialog from "@/components/custom/Dialogs/ModalDialog.vue";
+import NumberField from "@/components/custom/Inputs/NumberField.vue";
 
 const { getNodes, removeNode } = useNodeStore();
 const { getEdges, removeEdge } = useEdgeStore();
 
-const configs = inject<ComputedRef<UserConfigs>>('configs');
+const configs = inject<ComputedRef<UserConfigs>>("configs");
 
-const nodePrefix = inject<ShallowRef<string>>('nodePrefix', shallowRef<string>('Sommet'));
+const nodePrefix = inject<ShallowRef<string>>(
+  "nodePrefix",
+  shallowRef<string>("Sommet")
+);
 
-const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
-const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
-const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
+const isAddingNode = inject<ShallowRef<boolean>>(
+  "isAddingNode",
+  shallowRef<boolean>(false)
+);
+const isAddingEdge = inject<ShallowRef<boolean>>(
+  "isAddingEdge",
+  shallowRef<boolean>(false)
+);
+const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>(
+  "isAddingEdgeDialogOpen",
+  shallowRef<boolean>(false)
+);
 
-const selectedNodes = inject<Ref<string[]>>('selectedNodes', ref<string[]>([]));
-const selectedEdges = inject<Ref<string[]>>('selectedEdges', ref<string[]>([]));
+const selectedNodes = inject<Ref<string[]>>("selectedNodes", ref<string[]>([]));
+const selectedEdges = inject<Ref<string[]>>("selectedEdges", ref<string[]>([]));
 
 const graph = ref<Instance>();
 const nodes = ref(getNodes);
 const edges = ref(getEdges);
-const layouts = (inject<Ref<Layouts>>('layouts', ref<Layouts>({ nodes: {} })));
+const layouts = inject<Ref<Layouts>>("layouts", ref<Layouts>({ nodes: {} }));
 
 const nextNodeIndex = shallowRef<number>(Object.keys(nodes.value).length + 1);
 const nextEdgeIndex = shallowRef<number>(Object.keys(edges.value).length + 1);
 
 const eventHandlers: EventHandlers = {
   "view:click": ({ event }) => {
-    if (!graph.value || !isAddingNode.value) return
+    if (!graph.value || !isAddingNode.value) return;
 
     const point = { x: event.offsetX, y: event.offsetY };
     const svgPoint = graph.value.translateFromDomToSvgCoordinates(point);
@@ -39,15 +66,31 @@ const eventHandlers: EventHandlers = {
     const nodeId = `${nodePrefix.value.toLowerCase()}${nextNodeIndex.value}`;
     const name = `${nodePrefix.value} ${nextNodeIndex.value}`;
 
-    if (!!layouts.value.nodes) { layouts.value.nodes[nodeId] = svgPoint };
+    if (!!layouts.value.nodes) {
+      layouts.value.nodes[nodeId] = svgPoint;
+    }
 
     nodes.value[nodeId] = { id: nodeId, name };
-    nextNodeIndex.value++
-  }
-}
+    nextNodeIndex.value++;
+  },
+  "edge:contextmenu": (params) => {
+    params.event.preventDefault();
+    params.event.stopPropagation();
+
+    // Get the edge ID (either single edge or first in summarized group)
+    const edgeId = params.summarized ? params.edges[0] : params.edge;
+
+    if (edgeId) openEditEdgeDialog(edgeId);
+  },
+};
 const zoomLevel = shallowRef<number>(3);
 
 const edgeWeight = shallowRef<number>(Math.floor(Math.random() * 50) + 1);
+
+// NEW reactive state for editing edges
+const isEditingEdgeDialogOpen = shallowRef<boolean>(false);
+const editingEdgeId = ref<string | null>(null);
+const editingEdgeWeight = shallowRef<number>(0);
 
 function cancelEdgeAddition() {
   selectedNodes.value = [];
@@ -56,17 +99,17 @@ function cancelEdgeAddition() {
 
 function addEdge() {
   const [sourceId, targetId] = selectedNodes.value;
-  const duplicationExists = Object.values(edges.value).some(edge =>
-    (edge.source === sourceId && edge.target === targetId) ||
-    (edge.source === targetId && edge.target === sourceId)
+  const duplicationExists = Object.values(edges.value).some(
+    (edge) =>
+      (edge.source === sourceId && edge.target === targetId) ||
+      (edge.source === targetId && edge.target === sourceId)
   );
 
   if (duplicationExists) {
-    toast('Attention', {
-      description: 'Un arc existe déjà pour ces sommets',
+    toast("Attention", {
+      description: "Un arc existe déjà pour ces sommets",
     });
-  }
-  else {
+  } else {
     const edgeId = `edge${nextEdgeIndex.value}`;
     edges.value[edgeId] = {
       id: edgeId,
@@ -78,62 +121,130 @@ function addEdge() {
     nextEdgeIndex.value++;
   }
 
-
   selectedNodes.value = [];
   edgeWeight.value = Math.floor(Math.random() * 50) + 1;
 }
 
 function deleteSelectedElements() {
   if (selectedNodes.value.length > 0) {
-    selectedNodes.value.forEach(nodeId => {
+    selectedNodes.value.forEach((nodeId) => {
       removeNode(nodeId);
       delete layouts.value.nodes[nodeId];
     });
 
     selectedNodes.value = [];
-  }
-
-  else if (selectedEdges.value.length > 0) {
-    selectedEdges.value.forEach(edgeId => {
-      removeEdge(edgeId)
+  } else if (selectedEdges.value.length > 0) {
+    selectedEdges.value.forEach((edgeId) => {
+      removeEdge(edgeId);
     });
 
     selectedEdges.value = [];
   }
 }
 
-watch(() => Object.keys(nodes.value).length, (newLength) => {
-  nextNodeIndex.value = newLength + 1;
-}, { immediate: true });
+// Helper to open modal to edit edge
+function openEditEdgeDialog(edgeId: string) { // Should accept string
+  editingEdgeId.value = edgeId;
+  editingEdgeWeight.value = Number(edges.value[edgeId]?.label) || 0;
+  isEditingEdgeDialogOpen.value = true;
+}
 
-watch(() => Object.keys(edges.value).length, (newLength) => {
-  nextEdgeIndex.value = newLength + 1;
-}, { immediate: true });
+// Confirm editing edge weight
+function confirmEditEdge() {
+  if (!editingEdgeId.value || !edges.value[editingEdgeId.value]) return;
+  
+  edges.value[editingEdgeId.value] = {
+    ...edges.value[editingEdgeId.value],
+    label: editingEdgeWeight.value.toString(),
+  };
+  
+  isEditingEdgeDialogOpen.value = false;
+  editingEdgeId.value = null;
+}
+
+// Cancel editing edge
+function cancelEditEdge() {
+  isEditingEdgeDialogOpen.value = false;
+  editingEdgeId.value = null;
+}
+
+watch(
+  () => Object.keys(nodes.value).length,
+  (newLength) => {
+    nextNodeIndex.value = newLength + 1;
+  },
+  { immediate: true }
+);
+
+watch(
+  () => Object.keys(edges.value).length,
+  (newLength) => {
+    nextEdgeIndex.value = newLength + 1;
+  },
+  { immediate: true }
+);
 
 // watch(isAddingEdge, (isIt: boolean) => {
 //   if (configs?.value && configs.value.node) configs.value.node.selectable = isIt ? 2 : 1;
 // });
 
 watch(selectedNodes, () => {
-  isAddingEdgeDialogOpen.value = isAddingEdge.value && selectedNodes.value.length == 2;
+  isAddingEdgeDialogOpen.value =
+    isAddingEdge.value && selectedNodes.value.length == 2;
 });
 </script>
 
 <template>
-  <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
-    :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs" :eventHandlers="eventHandlers"
-    :zoom-level="zoomLevel" tabindex="0" @keyup.delete="deleteSelectedElements"
-    class="h-full graph border rounded-lg bg-background dark:bg-background">
+  <v-network-graph
+    ref="graph"
+    v-model:selected-nodes="selectedNodes"
+    v-model:selected-edges="selectedEdges"
+    :nodes="nodes"
+    :edges="edges"
+    :layouts="layouts"
+    :configs="configs"
+    :eventHandlers="eventHandlers"
+    :zoom-level="zoomLevel"
+    tabindex="0"
+    @keyup.delete="deleteSelectedElements"
+    class="h-full graph border rounded-lg bg-background dark:bg-background"
+  >
     <template #edge-label="{ edge, ...slotProps }">
-      <v-edge-label :text="edge.label" align="center" vertical-align="above" v-bind="slotProps"></v-edge-label>
+      <v-edge-label
+        :text="edge.label"
+        align="center"
+        vertical-align="above"
+        v-bind="slotProps"
+      ></v-edge-label>
     </template>
   </v-network-graph>
 
-  <ModalDialog v-model:open="isAddingEdgeDialogOpen" :onCancel="cancelEdgeAddition" :onConfirm="addEdge">
+  <ModalDialog
+    v-model:open="isAddingEdgeDialogOpen"
+    :onCancel="cancelEdgeAddition"
+    :onConfirm="addEdge"
+  >
     <template #dialog-title>Ajouter un arc</template>
     <template #dialog-description>Veuillez saisir le poids</template>
     <template #dialog-content>
       <NumberField v-model:model-value="edgeWeight" id="weight" :min="1" />
+    </template>
+  </ModalDialog>
+
+  <!-- NEW ModalDialog for editing edge -->
+  <ModalDialog
+    v-model:open="isEditingEdgeDialogOpen"
+    :onCancel="cancelEditEdge"
+    :onConfirm="confirmEditEdge"
+  >
+    <template #dialog-title>Modifier un arc</template>
+    <template #dialog-description>Veuillez saisir le nouveau poids</template>
+    <template #dialog-content>
+      <NumberField
+        v-model:model-value="editingEdgeWeight"
+        id="editWeight"
+        :min="1"
+      />
     </template>
   </ModalDialog>
 </template>
