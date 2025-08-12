@@ -146,7 +146,7 @@ function getCellData(
     >
       <TableHeader class="sticky top-0 bg-background dark:bg-background z-10">
         <TableRow>
-          <TableHead class="border border-slate-300">Étape</TableHead>
+          <!-- <TableHead class="border border-slate-300">Étape</TableHead> -->
           <TableHead
             v-for="id in nodeIds"
             :key="id"
@@ -159,9 +159,9 @@ function getCellData(
   
       <TableBody>
         <TableRow v-for="step in stepIndices" :key="step">
-          <TableCell class="border border-slate-300 font-medium">{{
+          <!-- <TableCell class="border border-slate-300 font-medium">{{
             step
-          }}</TableCell>
+          }}</TableCell> -->
           <TableCell
             v-for="node in sortedNodes"
             :key="node.id"
