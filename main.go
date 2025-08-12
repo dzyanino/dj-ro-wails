@@ -20,6 +20,7 @@ func main() {
 	app := NewApp()
 	randomizer := services.NewRandomizer()
 	dijkstra := services.NewDijkstra()
+	longest_path := services.NewLongestPath()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -48,6 +49,7 @@ func main() {
 			app,
 			randomizer,
 			dijkstra,
+			longest_path,
 		},
 	})
 

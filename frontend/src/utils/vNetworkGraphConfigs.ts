@@ -8,7 +8,8 @@ import {
 export function createGraphConfig(
   theme: "light" | "dark",
   isAddingEdge: boolean | number = false,
-  resolution: boolean = false
+  resolution: boolean = false,
+  directed: boolean = false
 ) {
   const isDark = theme == "dark";
 
@@ -95,14 +96,14 @@ export function createGraphConfig(
       gap: 50,
       normal: {
         color: isDark ? "#ffb3cc" : "#f18ca3",
-        width: 4,
+        width: 6,
       },
       hover: {
         color: isDark ? "#ff99bb" : "#ff6f96",
-        width: 8,
+        width: 10,
       },
       selected: {
-        width: 6,
+        width: 8,
       },
       label: {
         color: isDark ? "white" : "black",
@@ -114,6 +115,16 @@ export function createGraphConfig(
         bringToFrontOnHover: true,
         bringToFrontOnSelected: true,
       },
+      marker: directed
+        ? {
+            target: {
+              type: "angle",
+              width: 5,
+              height: 5,
+              margin: -10,
+            },
+          }
+        : {},
     },
     path: resolution
       ? {
