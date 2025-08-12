@@ -10,7 +10,7 @@ import {
   Step,
   ReconstructPath,
 } from "../../wailsjs/go/services/Dijkstra";
-import { VNetworkGraph, VEdgeLabel } from "v-network-graph";
+import { VNetworkGraph, VEdgeLabel, type UserConfigs } from "v-network-graph";
 import { Button } from "@/components/ui/button";
 import ResolutionTable from "@/components/custom/ResolutionPage/ResolutionTable.vue";
 import { ArrowRight, CheckIcon } from "lucide-vue-next";
@@ -31,11 +31,12 @@ const theme = computed(() =>
     : (mode.value as "dark" | "light")
 );
 
-const configs = createGraphConfig(theme.value, false, true);
+const configs = computed<UserConfigs>(() => createGraphConfig(theme.value, false, true));
 
 const { getNodes } = useNodeStore();
 const { getEdges } = useEdgeStore();
 
+// const graph = ref<Instance>();
 const nodes = ref(getNodes);
 const edges = ref(getEdges);
 
@@ -116,7 +117,7 @@ onMounted(async () => {
 <template>
 	<FloatingNavBar />
 	<main>
-		<div class="min-h-screen h-screen flex gap-4">
+		<div class="min-h-screen h-screen flex">
 			<div class="flex flex-col w-1/2 gap-y-4 p-8">
 				<div class="flex justify-end">
 					<Button :disabled="finished" @click="nextStep" class="max-w-fit">
@@ -162,7 +163,7 @@ onMounted(async () => {
 						<CheckIcon class="w-4 h-4" />
 						<AlertTitle>Chemin optimal</AlertTitle>
 						<AlertDescription>
-							<div class="flex gap-x-2 items-center">
+							<div class="flex flex-wrap gap-x-2 items-center">
 								<template v-for="(node, index) in path" :key="node">
 									<code>{{ node }}</code>
 									<code v-if="index < path.length - 1" class="text-xl">→</code>
