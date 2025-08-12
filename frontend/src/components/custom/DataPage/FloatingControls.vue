@@ -5,7 +5,7 @@ import { useEdgeStore } from '@/stores/edges'
 import type { Layouts } from 'v-network-graph'
 import { RandomGraphJS } from '../../../../wailsjs/go/services/Randomizer'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, BrushCleaningIcon, WaypointsIcon, RouteIcon } from 'lucide-vue-next'
 import NodeTable from './NodeTable.vue'
@@ -18,6 +18,8 @@ const { getEdges, setEdges, clearEdges } = useEdgeStore();
 const sidePanel = shallowRef<HTMLElement | null>(null)
 const panelWidth = shallowRef<number>(384)
 const isExpanded = shallowRef<boolean>(false)
+
+const nodePrefix = inject<ShallowRef<string>>('nodePrefix', shallowRef<string>('Sommet'));
 
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
@@ -81,7 +83,7 @@ function clearGraph() {
 async function createRandomGraph() {
   isCreatingRandomGraph.value = true;
 
-  const generatedGraph = await RandomGraphJS("sommet", 10, 14, 50, 50);
+  const generatedGraph = await RandomGraphJS(nodePrefix.value, 10, 14, 50, 50);
   setNodes(generatedGraph.nodes);
   setEdges(generatedGraph.edges);
   layouts.value = generatedGraph.layouts;
@@ -174,27 +176,27 @@ watch([selectedStart, selectedEnd], ([start, end]) => {
               <CardDescription>Par l'algorithme de Dijkstra</CardDescription>
             </CardHeader>
             <CardContent class="h-1/4">
-              <div class="flex flex-col md:flex-row gap-4 justify-between">
-                <Select v-model:model-value="selectedStart" :items="filteredStartNodes" label="Début"
-                  placeholder="Choisir..." />
-                <Select v-model:model-value="selectedEnd" :items="filteredEndNodes" label="Fin"
-                  placeholder="Choisir..." />
+              <div class="flex flex-col gap-y-4">
+                <div class="flex flex-col md:flex-row gap-4 justify-between">
+                  <Select v-model:model-value="selectedStart" :items="filteredStartNodes" label="Début"
+                    placeholder="Choisir..." />
+                  <Select v-model:model-value="selectedEnd" :items="filteredEndNodes" label="Fin"
+                    placeholder="Choisir..." />
+                </div>
+                <div class="flex flex-row w-full gap-4 justify-between">
+                  <Button :disabled="!selectedStart || !selectedEnd" as-child>
+                    <RouterLink :to="`/resolution?start=${selectedStart}&end=${selectedEnd}`">
+                      Chemin optimal
+                      <WaypointsIcon />
+                    </RouterLink>
+                  </Button>
+                  <Button :disabled="!selectedStart || !selectedEnd" variant="secondary">
+                    Chemin maximal
+                    <RouteIcon />
+                  </Button>
+                </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <div class="flex flex-row w-full gap-4 justify-between">
-                <Button :disabled="!selectedStart || !selectedEnd" as-child>
-                  <RouterLink :to="`/resolution?start=${selectedStart}&end=${selectedEnd}`">
-                    Chemin optimal
-                    <WaypointsIcon />
-                  </RouterLink>
-                </Button>
-                <Button :disabled="!selectedStart || !selectedEnd" variant="secondary">
-                  Chemin maximal
-                  <RouteIcon />
-                </Button>
-              </div>
-            </CardFooter>
           </Card>
         </TabsContent>
 

@@ -12,6 +12,8 @@ const { getEdges, removeEdge } = useEdgeStore();
 
 const configs = inject<ComputedRef<UserConfigs>>('configs');
 
+const nodePrefix = inject<ShallowRef<string>>('nodePrefix', shallowRef<string>('Sommet'));
+
 const isAddingNode = inject<ShallowRef<boolean>>('isAddingNode', shallowRef<boolean>(false));
 const isAddingEdge = inject<ShallowRef<boolean>>('isAddingEdge', shallowRef<boolean>(false));
 const isAddingEdgeDialogOpen = inject<ShallowRef<boolean>>('isAddingEdgeDialogOpen', shallowRef<boolean>(false));
@@ -34,8 +36,8 @@ const eventHandlers: EventHandlers = {
     const point = { x: event.offsetX, y: event.offsetY };
     const svgPoint = graph.value.translateFromDomToSvgCoordinates(point);
 
-    const nodeId = `node${nextNodeIndex.value}`;
-    const name = `Node ${nextNodeIndex.value}`;
+    const nodeId = `${nodePrefix.value.toLowerCase()}${nextNodeIndex.value}`;
+    const name = `${nodePrefix.value} ${nextNodeIndex.value}`;
 
     if (!!layouts.value.nodes) { layouts.value.nodes[nodeId] = svgPoint };
 
