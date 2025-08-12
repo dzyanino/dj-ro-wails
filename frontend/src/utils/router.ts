@@ -3,12 +3,14 @@ import Index from "@/pages/index.vue";
 import Data from "@/pages/Data.vue";
 import Help from "@/pages/Help.vue";
 import Resolution from "@/pages/Resolution.vue";
+import ResolutionMax from "@/pages/ResolutionMax.vue";
 
 const routes = [
   { path: "/", component: Index },
   { path: "/data", component: Data },
   { path: "/aide", component: Help },
   { path: "/resolution", component: Resolution },
+  { path: "/resolution-max", component: ResolutionMax },
 ];
 
 const router: Router = createRouter({
