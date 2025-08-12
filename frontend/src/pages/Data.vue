@@ -17,6 +17,8 @@ const theme = computed(() =>
 
 const mobile = shallowRef<boolean>(isMobile());
 
+const nodePrefix = shallowRef<string>('Sommet');
+
 const isAddingNode = shallowRef<boolean>(false);
 const isAddingEdge = shallowRef<boolean>(false);
 const layouts = ref<Layouts>({ nodes: {} });
@@ -29,6 +31,8 @@ const selectedEdges = ref<string[]>([]);
 const isAddingEdgeDialogOpen = shallowRef<boolean>(false);
 
 provide('configs', graphConfigs);
+
+provide('nodePrefix', nodePrefix);
 
 provide('isAddingNode', isAddingNode);
 provide('isAddingEdge', isAddingEdge);
