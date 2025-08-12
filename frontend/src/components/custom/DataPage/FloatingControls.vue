@@ -4,10 +4,11 @@ import { useNodeStore } from '@/stores/nodes'
 import { useEdgeStore } from '@/stores/edges'
 import type { Layouts } from 'v-network-graph'
 import { RandomGraphJS } from '../../../../wailsjs/go/services/Randomizer'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, BrushCleaningIcon, WaypointsIcon, RouteIcon } from 'lucide-vue-next'
+import { CirclePlusIcon, Loader2, PanelRightClose, PanelRightOpen, ShuffleIcon, SplineIcon, StopCircleIcon, BrushCleaningIcon, WaypointsIcon, RouteIcon, InfoIcon } from 'lucide-vue-next'
 import NodeTable from './NodeTable.vue'
 import ModalDialog from '@/components/custom/Dialogs/ModalDialog.vue'
 import Select from '@/components/custom/Selects/Select.vue'
@@ -83,7 +84,7 @@ function clearGraph() {
 async function createRandomGraph() {
   isCreatingRandomGraph.value = true;
 
-  const generatedGraph = await RandomGraphJS(nodePrefix.value, 10, 14, 50, 50);
+  const generatedGraph = await RandomGraphJS(nodePrefix.value, 20, 25, 500, 500);
   setNodes(generatedGraph.nodes);
   setEdges(generatedGraph.edges);
   layouts.value = generatedGraph.layouts;
@@ -140,7 +141,7 @@ watch([selectedStart, selectedEnd], ([start, end]) => {
     </div>
 
 
-    <div ref="sidePanel" class="w-xs md:w-sm h-full">
+    <div ref="sidePanel" class="w-xs md:w-md h-full">
       <Tabs default-value="tableau" class="h-full">
 
         <TabsList class="grid w-full grid-cols-2">
@@ -183,18 +184,42 @@ watch([selectedStart, selectedEnd], ([start, end]) => {
                   <Select v-model:model-value="selectedEnd" :items="filteredEndNodes" label="Fin"
                     placeholder="Choisir..." />
                 </div>
-                <div class="flex flex-row w-full gap-4 justify-between">
-                  <Button :disabled="!selectedStart || !selectedEnd" as-child>
-                    <RouterLink :to="`/resolution?start=${selectedStart}&end=${selectedEnd}`">
+                <div class="flex flex-row w-full gap-4 justify-evenly">
+                  <template v-if="!selectedStart || !selectedEnd">
+                    <Button disabled>
                       Chemin optimal
                       <WaypointsIcon />
-                    </RouterLink>
-                  </Button>
-                  <Button :disabled="!selectedStart || !selectedEnd" variant="secondary">
-                    Chemin maximal
-                    <RouteIcon />
-                  </Button>
+                    </Button>
+                    <Button disabled variant="secondary">
+                      Chemin maximal
+                      <RouteIcon />
+                    </Button>
+                  </template>
+                  <template v-else>
+                    <Button as-child>
+                      <RouterLink :to="`/resolution?start=${selectedStart}&end=${selectedEnd}`">
+                        Chemin optimal
+                        <WaypointsIcon />
+                      </RouterLink>
+                    </Button>
+                    <Button variant="secondary" as-child>
+                      <RouterLink :to="`/resolution-max?start=${selectedStart}&end=${selectedEnd}`">
+                        Chemin maximal
+                        <RouteIcon />
+                      </RouterLink>
+                    </Button>
+                  </template>
                 </div>
+                <Alert class="mb-4">
+                  <InfoIcon class="w-4 h-4" />
+                  <AlertTitle>NP Problème</AlertTitle>
+                  <AlertDescription>
+                    Pour trouver le chemin le plus long, l'algorithme explore tous les chemins possibles 
+                    depuis le point de départ. Il ne s'arrête que lorsque tous les noeuds accessibles 
+                    ont été traités, ce qui est similaire au problème du voyageur de commerce.
+                    Ce problème ne peut être résolu que dans un graphe pondéré positivement, acyclique et directionnel.
+                  </AlertDescription>
+                </Alert>
               </div>
             </CardContent>
           </Card>
